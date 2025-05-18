@@ -8,40 +8,37 @@
   <script src="https://unpkg.com/@popperjs/core@2"></script>
   <style>
     :root {
-      --accent: #e2c58d;
-      --base-bg: #fef9f4;
-      --secondary-bg: #f7f3ec;
-      --primary-text: #4e4d49;
-      --secondary-text: #725e45;
-      --highlight: #b7946a;
-      --deep-bg: #4e4d49;
-      --light: #ffffff;
+      --primary: #e2c58d;
+      --background-alt: #302d28;
+      --background: #22211f;
+      --surface: #31291f;
+      --text: #faf5eb;
+      --accent: #b7946a;
+      --accent2: #e2c58d;
     }
 
     body {
-      background: var(--base-bg);
-      color: var(--primary-text);
+      background: var(--background);
+      color: var(--text);
       font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     }
 
-    /* Gradient text using accent and highlight */
     .gradient-text {
-      background: linear-gradient(90deg, var(--accent), var(--highlight));
+      background: linear-gradient(90deg, var(--accent2), var(--accent));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
 
-    /* Gradient button with accent and highlight */
     .gradient-button {
-      background: linear-gradient(to right, var(--accent), var(--highlight));
+      background: linear-gradient(to right, var(--accent2), var(--accent));
     }
 
-    /* Fade-in animation */
     .fade-in {
       opacity: 0;
       transform: translateY(20px);
       animation: fadeInUp 0.8s ease-out forwards;
     }
+
     @keyframes fadeInUp {
       to {
         opacity: 1;
@@ -49,94 +46,85 @@
       }
     }
 
-    /* Navbar background and text */
     header {
-      background: #ffffff ; /* Changed to #fef9f4 */
-      color: var(--primary-text);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      background: var(--surface);
+      color: var(--text);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
       border-bottom-left-radius: 1rem;
       border-bottom-right-radius: 1rem;
-      padding-top: 1.25rem; /* increased vertical padding */
-      padding-bottom: 1.25rem; /* increased vertical padding */
+      padding-top: 1.25rem;
+      padding-bottom: 1.25rem;
     }
 
-    /* Navbar brand color */
     .navbar-brand {
-      color: var(--accent);
+      color: var(--accent2);
       font-weight: 700;
     }
 
-    /* Navbar links */
     nav a {
-      color: var(--secondary-text);
+      color: var(--text);
       transition: color 0.3s ease;
     }
+
     nav a:hover {
-      color: var(--highlight);
+      color: var(--accent);
     }
 
-    /* Buttons */
     a.bg-indigo-600, a.bg-indigo-600:hover {
-      background: var(--accent);
-      color: var(--deep-bg);
-      box-shadow: 0 4px 6px rgba(178,149,106,0.3);
+      background: var(--accent2);
+      color: var(--background);
+      box-shadow: 0 4px 6px rgba(183,148,106,0.3);
     }
+
     a.bg-indigo-600:hover {
-      background: var(--highlight);
+      background: var(--accent);
     }
 
-    /* Section backgrounds */
-    #features {
-      background: var(--light); /* white background */
+    #features, #faq {
+      background: var(--background-alt);
     }
+
     #how {
-      background: var(--secondary-bg);
+      background: var(--background);
     }
 
-    /* Feature cards */
     .feature-card {
-      background: var(--light); /* changed from secondary-bg to white */
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      background: var(--surface);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
       border-radius: 1.25rem;
       padding: 2rem;
-      color: var(--secondary-text);
+      color: var(--text);
       transition: box-shadow 0.3s ease, transform 0.3s ease;
       cursor: default;
     }
+
     .feature-card:hover {
-      box-shadow: 0 8px 20px rgba(178,149,106,0.25);
+      box-shadow: 0 8px 20px rgba(183,148,106,0.25);
       transform: translateY(-6px);
     }
+
     .feature-card h3 {
-      color: var(--accent);
+      color: var(--primary);
       font-weight: 700;
       margin-bottom: 1rem;
       font-size: 1.25rem;
     }
 
-    /* Steps numbering colors */
-    .step-1 {
-      color: var(--accent);
-    }
-    .step-2 {
-      color: var(--highlight);
-    }
-    .step-3 {
-      color: var(--secondary-text);
+    .step-1, .step-2, .step-3 {
+      color: var(--accent2);
     }
 
-    /* CTA */
     .cta-container {
-      background: linear-gradient(to right, var(--accent), var(--highlight));
+      background: linear-gradient(to right, var(--accent2), var(--accent));
       border-radius: 3rem;
       padding: 4rem 6rem;
-      color: var(--light);
-      box-shadow: 0 10px 30px rgba(178,149,106,0.4);
+      color: var(--background);
       text-align: center;
     }
+
     .cta-container a {
-      background: var(--light);
-      color: var(--deep-bg);
+      background: var(--background);
+      color: var(--accent2);
       font-weight: 700;
       padding: 0.75rem 2rem;
       border-radius: 9999px;
@@ -146,71 +134,70 @@
       margin-top: 1.5rem;
       text-decoration: none;
     }
+
     .cta-container a:hover {
-      background: var(--secondary-bg);
+      background: var(--background-alt);
     }
 
-    /* Footer */
     footer {
-      color: var(--secondary-text);
-      margin-top: 5rem;
+      color: var(--accent2);
+      background: var(--surface);
       padding: 4rem 1rem;
       text-align: center;
-      background: var(--light); /* ensure footer background is white */
     }
+
     footer .brand {
-      color: var(--accent);
+      color: var(--primary);
       font-weight: 700;
       font-size: 1.5rem;
       margin-bottom: 1rem;
     }
+
     footer a {
       margin: 0 1rem;
-      color: var(--secondary-text);
+      color: var(--text);
       text-decoration: none;
       transition: color 0.3s ease;
     }
+
     footer a:hover {
-      color: var(--highlight);
+      color: var(--accent);
     }
   </style>
 </head>
 <body>
 
-  <!-- Navbar -->
   <header class="sticky top-0 z-50">
     <div class="max-w-7xl mx-auto px-6 py-0 flex justify-between items-center">
-      <div class="text-xl md:text-2xl navbar-brand"> ReadRift</div>
+      <div class="text-xl md:text-2xl navbar-brand">ReadRift</div>
       <nav class="space-x-6 hidden md:block">
         <a href="#features">Features</a>
         <a href="#how">How it works</a>
         <a href="#faq">FAQ</a>
       </nav>
       <div class="space-x-2">
-        <a href="/login" class="text-sm md:text-base" style="color: var(--secondary-text);">Login</a>
-        <a href="/register" class="px-4 py-2 rounded-full text-sm md:text-base font-medium shadow-md" style="background: var(--accent); color: var(--deep-bg); box-shadow: 0 4px 6px rgba(178,149,106,0.3);" onmouseover="this.style.backgroundColor='var(--highlight)'" onmouseout="this.style.backgroundColor='var(--accent)'">Get Started</a>
+        <a href="/login" class="text-sm md:text-base" style="color: var(--accent2);">Login</a>
+        <a href="/register" class="px-4 py-2 rounded-full text-sm md:text-base font-medium shadow-md" style="background: var(--accent2); color: var(--background); box-shadow: 0 4px 6px rgba(183,148,106,0.3);" onmouseover="this.style.backgroundColor='var(--accent)'" onmouseout="this.style.backgroundColor='var(--accent2)'">Get Started</a>
       </div>
     </div>
   </header>
 
-  <!-- Hero Section -->
   <section class="text-center py-24 px-6 fade-in">
-    <h1 class="text-4xl md:text-6xl font-extrabold leading-tight mb-6" style="color: var(--primary-text);">
+    <h1 class="text-4xl md:text-6xl font-extrabold leading-tight mb-6">
       Read Smarter.<br>
       <span class="gradient-text block mt-2">AI-Powered Context, Instantly.</span>
     </h1>
-    <p class="max-w-2xl mx-auto text-lg md:text-xl mb-8" style="color: var(--secondary-text);">
+    <p class="max-w-2xl mx-auto text-lg md:text-xl mb-8" style="color: var(--text);">
       ReadRift enhances your reading experience by providing real-time definitions, examples, and contextual explanations — without leaving the page.
     </p>
     <a href="/register" class="gradient-button text-white px-6 py-3 md:px-8 md:py-4 text-lg md:text-xl rounded-full font-semibold shadow-lg hover:opacity-90 transition">
       Get Started Free
     </a>
-    <div class="mt-4 text-sm md:text-base" style="color: var(--secondary-text);">⚡ Trusted by 10,000+ readers worldwide</div>
+    <div class="mt-4 text-sm md:text-base" style="color: var(--accent2);">⚡ Trusted by 10,000+ readers worldwide</div>
   </section>
 
-  <!-- Features Component -->
   <section id="features" class="text-center py-20 fade-in">
-    <h2 class="text-3xl md:text-4xl font-bold mb-12" style="color: var(--primary-text);">Transform Your Reading Experience</h2>
+    <h2 class="text-3xl md:text-4xl font-bold mb-12">Transform Your Reading Experience</h2>
     <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 px-4">
       <div class="feature-card">
         <h3>AI-Powered Context</h3>
@@ -227,22 +214,21 @@
     </div>
   </section>
 
-  <!-- How It Works Component -->
   <section id="how" class="text-center py-20 fade-in">
-    <h2 class="text-3xl md:text-4xl font-bold mb-8" style="color: var(--primary-text);">How It Works</h2>
-    <p class="text-base md:text-lg mb-10" style="color: var(--secondary-text);">Just three steps to reading like a pro.</p>
+    <h2 class="text-3xl md:text-4xl font-bold mb-8">How It Works</h2>
+    <p class="text-base md:text-lg mb-10" style="color: var(--accent2);">Just three steps to reading like a pro.</p>
     <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 px-4">
-      <div class="bg-var-light p-6 rounded-xl shadow-md" style="background: var(--light); color: var(--primary-text); border-radius: 1rem;">
+      <div class="p-6 rounded-xl shadow-md" style="background: var(--surface);">
         <div class="step-1 text-3xl font-bold mb-2">1</div>
         <h4 class="text-lg font-semibold mb-1">Upload or Paste</h4>
         <p>Add your content or choose from our library.</p>
       </div>
-      <div class="bg-var-light p-6 rounded-xl shadow-md" style="background: var(--light); color: var(--primary-text); border-radius: 1rem;">
+      <div class="p-6 rounded-xl shadow-md" style="background: var(--surface);">
         <div class="step-2 text-3xl font-bold mb-2">2</div>
         <h4 class="text-lg font-semibold mb-1">Read with Smart Assist</h4>
         <p>Highlighted words offer real-time support.</p>
       </div>
-      <div class="bg-var-light p-6 rounded-xl shadow-md" style="background: var(--light); color: var(--primary-text); border-radius: 1rem;">
+      <div class="p-6 rounded-xl shadow-md" style="background: var(--surface);">
         <div class="step-3 text-3xl font-bold mb-2">3</div>
         <h4 class="text-lg font-semibold mb-1">Learn Instantly</h4>
         <p>Understand faster and build your vocabulary.</p>
@@ -250,7 +236,6 @@
     </div>
   </section>
 
-  <!-- CTA Component -->
   <section class="max-w-5xl mx-auto mt-20 px-6 fade-in">
     <div class="cta-container">
       <h2 class="text-3xl md:text-4xl font-bold mb-4">Ready to Read Smarter?</h2>
@@ -259,9 +244,8 @@
     </div>
   </section>
 
-  <!-- Footer Component -->
   <footer>
-    <div class="brand"> ReadRift</div>
+    <div class="brand">ReadRift</div>
     <div class="space-x-4 md:space-x-8 mb-6">
       <a href="#">Features</a>
       <a href="#">How it works</a>

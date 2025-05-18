@@ -186,12 +186,12 @@ body.dark-mode {
     display: none; /* Hide icon when expanded */
 }
 
-.book-header,
-.chat-header {
-    padding: 5px;
+.book-header {
+    padding: 5px; /* You can reduce this value */
     background: var(--header-bg);
     border-bottom: 1px solid var(--border-color);
     color: var(--text-color);
+    height: 50px; /* Set a specific height if needed */
 }
 
 .chat-history {
@@ -580,15 +580,20 @@ async function sendQuestion() {
     
     const button = document.querySelector('button');
     button.disabled = true;
-    button.textContent = 'Analyzing...';
-    
-    try {
-        // Add user's question to chat history
-        const userMessage = document.createElement('div');
-        userMessage.className = 'chat-message user-message';
-        userMessage.textContent = `You: ${question} (${currentFunction})`;
-        document.getElementById('chat-history').appendChild(userMessage);
 
+    // Add user's question to chat history
+    const userMessage = document.createElement('div');
+    userMessage.className = 'chat-message user-message';
+    userMessage.textContent = `You: ${question} (${currentFunction})`;
+    document.getElementById('chat-history').appendChild(userMessage);
+
+    // Add "Analyzing..." message to chat history
+    const analyzingMessage = document.createElement('div');
+    analyzingMessage.className = 'chat-message ai-message';
+    analyzingMessage.textContent = 'AI: Analyzing...';
+    document.getElementById('chat-history').appendChild(analyzingMessage);
+
+    try {
         if (!navigator.onLine) {
             saveMessageLocally({
                 question: question,
@@ -606,19 +611,22 @@ async function sendQuestion() {
                     },
                     body: JSON.stringify({
                         book_path: localPath,
-                question: question,
-                function_type: currentFunction
-            })
-        });
-        
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.error || 'Server error');
-        }
-        
-        const data = await response.json();
-        displayAnswer(data.answer);
-    }catch (error) {
+                        question: question,
+                        function_type: currentFunction
+                    })
+                });
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Server error');
+                }
+                
+                const data = await response.json();
+                displayAnswer(data.answer);
+                
+                // Remove the "Analyzing..." message after receiving the answer
+                analyzingMessage.remove();
+            } catch (error) {
                 // If failed while online, save locally as backup
                 saveMessageLocally({
                     question: question,
@@ -627,6 +635,8 @@ async function sendQuestion() {
                     error: error.message
                 });
                 alert('Message saved locally due to server error.');
+                // Optionally remove the "Analyzing..." message if there's an error
+                analyzingMessage.remove();
             }
         }
         // Save the conversation after each message
@@ -634,9 +644,10 @@ async function sendQuestion() {
     } catch (error) {
         console.error('Error details:', error);
         alert(`Error: ${error.message}`);
+        // Remove the "Analyzing..." message in case of an error
+        analyzingMessage.remove();
     } finally {
         button.disabled = false;
-        button.textContent = 'Ask Rifter';
         document.getElementById('user-question').value = ''; // Clear the input
     }
 }
