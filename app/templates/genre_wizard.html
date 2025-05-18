@@ -1,0 +1,162 @@
+{% extends "line.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">📚 Discover Your Reading Preferences</h3>
+                    <p class="mb-0">Select your favorite genres to get personalized recommendations</p>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('main.genre_wizard') }}">
+                        {{ form.hidden_tag() }}
+                        <div class="mb-4">
+                            <p class="text-muted">Choose at least 3 genres to get started</p>
+                            <div class="row">
+                                {% for genre in genres %}
+                                <div class="col-md-4 mb-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input genre-checkbox" 
+                                               type="checkbox" 
+                                               name="genres" 
+                                               value="{{ genre.id }}"
+                                               id="genre{{ genre.id }}"
+                                               {% if genre.name in (current_user.genre_preferences or '').split(',') %}checked{% endif %}>
+                                        <label class="form-check-label" for="genre{{ genre.id }}">
+                                            {{ genre.name }}
+                                        </label>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('main.explore') }}" class="btn btn-outline-secondary">
+                                Skip for now
+                            </a>
+                            <button type="submit" class="btn btn-primary" id="submitBtn" disabled>
+                                Save Preferences
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .container {
+        margin-left: 100px; /* Adjusted from 220px to 180px */
+        width: calc(100% - 180px); /* Update width accordingly */
+        max-width: 1200px;
+        transition: margin 0.3s ease;
+    }
+
+.card {
+    border: none;
+    border-radius: 15px;
+    overflow: hidden;
+    margin-top: 1.5rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.card-header {
+    border-bottom: none;
+    padding: 1.5rem 2rem;
+    background: linear-gradient(135deg, #7f4f24, #ffe6a7);
+    transition: background 0.3s ease;
+}
+
+.card-header:hover {
+    background: linear-gradient(135deg, #7f4f24, #ffe6a7);
+}
+
+.form-check-input {
+    width: 1.2em;
+    height: 1.2em;
+    margin-top: 0.2em;
+    transition: transform 0.3s ease;
+}
+
+.form-check-input:checked {
+    transform: scale(1.2);
+}
+
+.form-check-label {
+    margin-left: 0.5em;
+    font-size: 1.1em;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.form-check:hover .form-check-label {
+    color: #007bff;
+}
+
+.form-check {
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.form-check:hover {
+    background-color: #f8f9fa;
+    transform: translateY(-2px);
+}
+
+#submitBtn:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+    transition: opacity 0.3s ease;
+}
+
+#submitBtn:enabled {
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+@media (max-width: 992px) {
+    .container {
+        margin-left: 0;
+        width: 100%;
+        padding: 0 15px;
+    }
+}
+</style>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const checkboxes = document.querySelectorAll('.genre-checkbox');
+    const submitBtn = document.getElementById('submitBtn');
+    
+    function updateSubmitButton() {
+        const checkedCount = document.querySelectorAll('.genre-checkbox:checked').length;
+        submitBtn.disabled = checkedCount < 3;
+    }
+    
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', updateSubmitButton);
+    });
+    
+    // Initial check
+    updateSubmitButton();
+});
+</script>
+{% endblock %}

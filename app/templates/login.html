@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Login - ReadRift</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-light: #f4ede8;
+      --bg-glass: rgba(255, 255, 255, 0.75);
+      --text-main: #333d29;
+      --text-soft: #7f4f24;
+      --accent: #b7946a;
+      --button-bg: #7f4f24;
+      --button-hover: #582f0e;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Raleway', sans-serif;
+      background: url('https://images.unsplash.com/photo-1531306728370-e2ebd9d7bb99?auto=format&fit=crop&w=1950&q=80') no-repeat center center fixed;
+      background-size: cover;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .login-container {
+      background: var(--bg-glass);
+      backdrop-filter: blur(15px);
+      padding: 50px 35px;
+      border-radius: 20px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+      width: 90%;
+      max-width: 380px;
+      text-align: center;
+      transition: transform 0.3s ease;
+    }
+
+    .login-container:hover {
+      transform: scale(1.01);
+    }
+
+    .login-container h1 {
+      color: var(--text-main);
+      font-size: 30px;
+      margin-bottom: 10px;
+    }
+
+    .login-container p {
+      font-size: 14px;
+      color: var(--text-soft);
+      margin-bottom: 25px;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+    }
+
+    label {
+      text-align: left;
+      margin-bottom: 6px;
+      font-size: 13px;
+      color: var(--text-main);
+      font-weight: 600;
+    }
+
+    input[type="email"],
+    input[type="password"] {
+      padding: 12px;
+      margin-bottom: 20px;
+      border: none;
+      border-radius: 10px;
+      background-color: var(--bg-light);
+      font-size: 14px;
+      box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.05),
+                  inset -2px -2px 5px rgba(255, 255, 255, 0.5);
+      transition: all 0.3s ease;
+    }
+
+    input:focus {
+      outline: none;
+      box-shadow: 0 0 0 2px var(--accent);
+    }
+
+    .options {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: var(--text-soft);
+      margin-bottom: 20px;
+    }
+
+    .options a {
+      color: var(--text-soft);
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+
+    .options a:hover {
+      color: var(--text-main);
+      text-decoration: underline;
+    }
+
+    button {
+      background-color: var(--button-bg);
+      color: #fff;
+      padding: 12px;
+      font-size: 16px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+      font-weight: 600;
+    }
+
+    button:hover {
+      background-color: var(--button-hover);
+      transform: translateY(-2px);
+    }
+
+    .signup-link {
+      margin-top: 20px;
+      font-size: 13px;
+      color: var(--text-soft);
+    }
+
+    .signup-link a {
+      color: var(--text-main);
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .signup-link a:hover {
+      text-decoration: underline;
+    }
+
+    @media screen and (max-width: 400px) {
+      .login-container {
+        padding: 35px 25px;
+      }
+
+      .login-container h1 {
+        font-size: 24px;
+      }
+
+      input {
+        font-size: 13px;
+      }
+
+      button {
+        font-size: 15px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="login-container">
+    <h1>Welcome Back</h1>
+    <p>Please login to your account</p>
+
+    <form action="{{ url_for('main.login') }}" method="POST">
+      {{ form.hidden_tag() }}
+
+      <label for="email">Email Address</label>
+      <input type="email" id="email" name="email" placeholder="Enter your email"  required>
+
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" placeholder="Enter your password" required>
+
+      <div class="options">
+        <label>
+          <input type="checkbox" name="remember_me">
+          Remember me
+        </label>
+        <a href="{{ url_for('main.user_dashboard') }}">Forgot Password?</a>
+      </div>
+
+      <button type="submit">Log In</button>
+    </form>
+
+    <div class="signup-link">
+      Don't have an account? <a href="{{ url_for('main.register') }}">Sign Up</a>
+    </div>
+  </div>
+  
+</body>
+</html>

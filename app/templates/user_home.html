@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - ReadRift</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Color Scheme */
+        :root {
+            --primary-bg: #f9f9f9;
+            --primary-text: #333d29;
+            --secondary-bg: #c2c5aa;
+            --secondary-text: #6a4f30;
+            --highlight-bg: #7f4f24;
+            --highlight-text: #ffe6a7;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--primary-bg);
+            color: var(--primary-text);
+            transition: background-color 0.3s, color 0.3s;
+        }
+             /* Dark mode overrides */
+             body.dark-mode {
+            --primary-bg: #232323;
+            --primary-text: #f0e9e0;
+            --secondary-bg: #333d29;
+            --secondary-text: #ffe6a7;
+            --highlight-bg: #7f4f24;
+            --highlight-text: #ffe6a7;
+            background-color: var(--primary-bg);
+            color: var(--primary-text);
+        }
+        .navbar {
+            display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: nowrap;
+    background-color: white;
+    padding: 10px 32px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 100;
+    gap: 0;
+        }
+        body.dark-mode .navbar {
+            background: linear-gradient(135deg, #2c1e13 0%, #47311d 60%, #7f4f24 100%);
+            box-shadow: 0 4px 18px rgba(40, 20, 0, 0.22);    
+        }
+        .navbar-left{
+            display: flex;
+    align-items: center;
+    gap: 18px;
+        }
+        .navbar-center {
+            display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    gap: 22px;
+        }
+        .navbar-right {
+            display: flex;
+    align-items: center;
+    gap: 2px;
+    font-size: 20px;
+    margin: 0 24px; /* Increased right margin even more */
+    transform: scale(1.1);
+    transform-origin: left center;
+    position: relative;
+    left: -40px; /* Moved further to the left */
+        }
+        /* Ensure all direct children of navbar-right have equal spacing */
+.navbar-right > * {
+    margin: 0 2px !important; /* Minimal margin */
+}
+        .navbar-left .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--highlight-bg);
+        }
+        .theme-toggle-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 20px;
+            margin: 0 6px;
+            color: var(--highlight-bg);
+            transition: color 0.3s;
+        }
+        body.dark-mode .theme-toggle-btn {
+            color: var(--highlight-text);
+        }
+        /* Main content styles */
+        .main-content {
+            margin-top: 80px;
+            padding: 32px;
+        }
+        .dynamic-greeting {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 28px;
+            color: var(--highlight-bg);
+            transition: color 0.3s;
+        }
+        body.dark-mode .dynamic-greeting {
+            color: var(--highlight-text);
+        }
+        /* Sidebar Styling */
+.sidebar {
+    width: 220px;
+    height: 100vh;
+    background-color: #fff;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.08);
+    padding: 24px 0 0 0;
+    position: fixed;
+    top: 60px;
+    left: 0;
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    transition: background 0.3s, color 0.3s;
+}
+body.dark-mode .sidebar {
+    background: linear-gradient(180deg, 
+        #33231a 0%, 
+        #47311d 30%, 
+        #5c4027 60%, 
+        #66442a 100%);
+    box-shadow: 2px 0 12px rgba(40, 20, 0, 0.20);
+
+}
+.sidebar a {
+    display: flex;
+    align-items: center;
+    padding: 14px 28px;
+    text-decoration: none;
+    color: var(--primary-text);
+    font-size: 17px;
+    margin: 8px 0;
+    border-radius: 10px;
+    transition: background 0.2s, color 0.2s;
+    width: 100%;
+    box-sizing: border-box;
+}
+body.dark-mode .sidebar a {
+    color: #ffe6a7;
+}
+.sidebar a.active, .sidebar a:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #fff;
+}
+body.dark-mode .sidebar a.active,
+body.dark-mode .sidebar a:hover {
+    background-color: #7f4f24;
+    color: #ffe6a7;
+}
+.sidebar a i {
+    margin-right: 12px;
+    font-size: 18px;
+}
+        /* 
+
+        /* Navbar Styling */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, 
+        #f8f9fa 0%, 
+        #e9ecef 70%, 
+        #dee2e6 100%);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 100;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-left, .navbar-center {
+            display: flex;
+            align-items: center;
+            margin: 5px 0;
+        }
+ 
+
+        .navbar-left .logo {
+            font-size: 28px;
+            font-weight: bold;
+            color: var(--highlight-bg);
+            font-family: 'Georgia', serif;
+            text-decoration: none;
+        }
+
+        .navbar-center {
+            flex: 1;
+            justify-content: center;
+            min-width: 250px;
+        }
+
+        .navbar-center form {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            background: #f8f8f8;
+            padding: 5px 10px;
+            border-radius: 20px;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .navbar-center input {
+            border: none;
+            outline: none;
+            background: transparent;
+            padding: 6px 8px;
+            width: 150px;
+            min-width: 100px;
+        }
+
+        .navbar-center select {
+            border: none;
+            outline: none;
+            background: var(--secondary-bg);
+            color: var(--primary-text);
+            margin: 0 8px;
+            padding: 6px 8px;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .navbar-center button {
+            background: var(--highlight-bg);
+            color: var(--highlight-text);
+            border: none;
+            padding: 6px 10px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .navbar-center button i {
+            font-size: 14px;
+        }
+
+        .navbar-right i {
+            color: var(--primary-text);
+    font-size: 22px; /* Slightly larger font size */
+    padding: 4px 6px;
+    margin: 0 1px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+        }
+
+        .navbar-right .avatar {
+            background-color: var(--highlight-bg);
+    border-radius: 50%;
+    color: white;
+    padding: 5px 8px;
+    font-weight: bold;
+    font-size: 18px;
+    margin: 0 1px;
+    position: relative;
+    z-index: 1000; }
+
+        /* Sidebar Styling */
+        .sidebar {
+            width: 220px;
+            height: 100vh;
+            background: linear-gradient(180deg, 
+        #ffffff 0%, 
+        #f8f9fa 30%, 
+        #e9ecef 60%, 
+        #dee2e6 100%);
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.08);
+            padding: 20px 0;
+            position: fixed;
+            top: 60px;
+            left: 0;
+            z-index: 5;
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            justify-content: flex-start;
+        }
+
+        .sidebar a {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            text-decoration: none;
+            color: var(--primary-text);
+            font-size: 16px;
+            margin: 10px 0;
+            border-radius: 8px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .sidebar a:hover {
+            background-color: var(--highlight-bg);
+            color: var(--highlight-text);
+        }
+
+        .sidebar a i {
+            margin-right: 10px;
+            font-size: 18px;
+            transition: color 0.3s ease;
+        }
+
+        .sidebar a:hover i {
+            color: var(--highlight-text);
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 240px;
+            padding: 80px 20px 20px 20px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .section h3 {
+            font-size: 18px;
+            color: var(--secondary-text);
+            margin-bottom: 20px;
+        }
+
+        .book-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 32px;
+            justify-items: center;
+            align-items: start;
+            margin-bottom: 32px;
+        }
+
+        .book-item {
+            background-color: white;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+            text-align: center;
+            width: 160px;
+        }
+
+        .book-cover {
+            width: 140px;
+            height: 210px;
+            object-fit: cover;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+            transition: transform 0.2s, box-shadow 0.2s;
+            background: #f8f8f8;
+            display: block;
+            margin: 0 auto 10px auto;
+        }
+
+        .book-cover:hover {
+            transform: scale(1.04);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.18);
+        }
+
+        .book-item h4 {
+            font-size: 16px;
+            margin: 10px 0 4px 0;
+            color: var(--secondary-text);
+            font-weight: 600;
+        }
+
+        .book-item p {
+            font-size: 14px;
+            color: #7b6a58;
+            margin: 0 0 8px 0;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 800px) {
+    .navbar {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 10px 10px;
+        gap: 8px;
+    }
+    .navbar-center {
+        width: 100%;
+        justify-content: center;
+        margin: 10px 0;
+    }
+
+    .sidebar {
+        width: 100vw;
+        position: static;
+        height: auto;
+        flex-direction: row;
+        overflow-x: auto;
+        padding: 0;
+    }
+}
+        .avatar-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    right: -8px; /* Adjust dropdown position to align with avatar */
+    top: 110%;
+    background: white;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    border-radius: 8px;
+    min-width: 140px;
+    z-index: 2000;
+    padding: 8px 0;
+
+}
+
+.dropdown-menu a {
+    display: block;
+    padding: 10px 20px;
+    color: #4e4d49;
+    text-decoration: none;
+    font-size: 15px;
+    transition: background 0.2s;
+}
+
+.dropdown-menu a:hover {
+    background: #f7f3ec;
+}
+.notification-dropdown {
+    position: relative;
+    display: inline-block;
+}
+.notification-badge {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    background: red;
+    color: white;
+    border-radius: 50%;
+    font-size: 11px;
+    padding: 2px 6px;
+}
+.notification-menu {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 120%;
+    background: white;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    border-radius: 8px;
+    min-width: 200px;
+    z-index: 200;
+    padding: 8px 0;
+}
+.notification-item {
+    padding: 10px 20px;
+    font-size: 15px;
+    border-bottom: 1px solid #eee;
+}
+.notification-item:last-child {
+    border-bottom: none;
+}
+.book-actions {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 1rem;
+    }
+    .sidebar-toggle-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 22px;
+        color: var(--highlight-bg);
+        margin-right: 10px;
+        display: flex;
+        align-items: center;
+    }
+    body.dark-mode .sidebar-toggle-btn {
+        color: var(--highlight-text);
+    }
+    .sidebar {
+        transition: width 0.3s, min-width 0.3s;
+        width: 220px;
+        min-width: 220px;
+    }
+    .sidebar-collapsed {
+        width: 0 !important;
+        min-width: 0 !important;
+        overflow-x: hidden;
+    }
+    .sidebar-collapsed a,
+    .sidebar-collapsed * {
+        display: none !important;
+    }
+    .main-content {
+        margin-left: 220px;
+        transition: margin-left 0.3s;
+    }
+    .sidebar-collapsed ~ .main-content {
+        margin-left: 0 !important;
+    }
+    @media (max-width: 800px) {
+        .sidebar {
+            width: 100vw;
+            min-width: unset;
+        }
+        .sidebar-collapsed {
+            width: 0;
+            min-width: 0;
+            display: none;
+        }
+        .sidebar-collapsed ~ .main-content {
+            margin-left: 0 !important;
+        }
+    }
+    .book-popup {
+        display: none;
+        position: fixed;
+        min-width: 220px;
+        max-width: 340px;
+        width: 90vw;
+        background: #fff;
+        color: #23272f;
+        border-radius: 12px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+        padding: 1.1rem 1.2rem 1.1rem 1.2rem;
+        z-index: 9999;
+        text-align: left;
+        font-size: 1rem;
+        line-height: 1.5;
+        border: 1px solid #e0e0e0;
+        transition: opacity 0.18s cubic-bezier(.4,0,.2,1), transform 0.18s cubic-bezier(.4,0,.2,1);
+        opacity: 0;
+        pointer-events: none;
+        box-sizing: border-box;
+    }
+    @media (max-width: 500px) {
+        .book-popup {
+            min-width: 0;
+            width: 98vw;
+            left: 1vw !important;
+            padding: 0.7rem 0.5rem 0.7rem 0.5rem;
+        }
+    }
+    .book-popup::before,
+    .book-popup.arrow-below::before,
+    .book-popup.arrow-above::before {
+        display: none !important;
+    }
+    .book-popup.active {
+        display: block;
+        opacity: 1;
+        pointer-events: auto;
+        animation: fadeIn 0.18s;
+    }
+    .book-popup.arrow-below::before,
+    .book-popup.arrow-above::before {
+        content: '';
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        border: solid transparent;
+        height: 0;
+        width: 0;
+        pointer-events: none;
+    }
+    .book-popup.arrow-below::before {
+        top: -10px;
+        border-width: 0 10px 10px 10px;
+        border-bottom-color: #fff;
+        z-index: 10001;
+    }
+    body.dark-mode .book-popup.arrow-below::before {
+        border-bottom-color: #23272f;
+    }
+    .book-popup.arrow-above::before {
+        bottom: -10px;
+        border-width: 10px 10px 0 10px;
+        border-top-color: #fff;
+        z-index: 10001;
+    }
+    body.dark-mode .book-popup.arrow-above::before {
+        border-top-color: #23272f;
+    }
+    .book-popup .popup-title {
+        font-size: 1.08rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: #4a90e2;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .book-popup .popup-desc {
+        margin-bottom: 0.7rem;
+        color: #23272f;
+        max-height: 180px;
+        overflow-y: auto;
+        font-size: 0.98rem;
+    }
+    .book-popup .popup-genres {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.35rem;
+        margin-top: 0.2rem;
+    }
+    .book-popup .badge {
+        background: #4a90e2;
+        color: #fff;
+        padding: 0.18rem 0.7rem;
+        border-radius: 999px;
+        font-size: 0.78rem;
+        font-weight: 500;
+        box-shadow: 0 1px 4px rgba(58,123,200,0.08);
+        border: none;
+        margin-bottom: 0.1rem;
+        letter-spacing: 0.01em;
+    }
+    body.dark-mode .book-popup {
+        background: #23272f;
+        color: #f1f1f1;
+        border: 1px solid #333a4a;
+    }
+    body.dark-mode .book-popup .popup-title {
+        color: #7bb6ff;
+    }
+    body.dark-mode .book-popup .popup-desc {
+        color: #e0e0e0;
+    }
+    body.dark-mode .book-popup .badge {
+        background: #3a7bc8;
+        color: #fff;
+    }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <div class="navbar">
+        <div class="navbar-left">
+            <button class="sidebar-toggle-btn" id="sidebar-toggle-btn" title="Toggle sidebar">
+                <i class="fas fa-bars"></i>
+            </button>
+            <a href="{{ url_for('main.home') }}" class="logo">ReadRift</a>
+        </div>
+
+        <div class="navbar-center">
+            <form method="get" action="{{ url_for('main.home') }}">
+                <input type="text" name="q" placeholder="Enter Book Name" value="{{ request.args.get('q', '') }}">
+                <select name="genre">
+                    <option value="">Genre</option>
+                    {% for g in genres %}
+                        <option value="{{ g }}" {% if request.args.get('genre') == g %}selected{% endif %}>{{ g }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit"><i class="fas fa-search"></i></button>
+            </form>
+        </div>
+
+        <div class="navbar-right">
+            <i class="fas fa-fire"></i>
+            <a class="nav-link" href="{{ url_for('main.badges_page') }}">
+                <i class="fas fa-trophy"></i>
+            </a>
+            <button class="theme-toggle-btn" id="theme-toggle-btn" title="Toggle light/dark mode">
+                <i class="fas fa-moon"></i>
+            </button>
+            <div class="notification-dropdown">
+                <i class="fas fa-bell" id="notification-bell">
+                    {% if notification_count > 0 %}
+                    <span class="notification-badge">{{ notification_count }}</span>
+                    {% endif %}
+                </i>
+                <div class="notification-menu" id="notification-menu">
+                    {% if notifications %}
+                        {% for n in notifications %}
+                            <div class="notification-item">{{ n.message }}</div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="notification-item">No new notifications.</div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="avatar-dropdown">
+                <div class="avatar" id="avatar-btn">{{ user_initial }}</div>
+                <div class="dropdown-menu" id="avatar-menu">
+                    <a href="{{ url_for('main.settings') }}">User Settings</a>
+                    <a href="{{ url_for('main.logout') }}">Logout</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <a href="{{ url_for('main.home') }}"><i class="fas fa-home"></i><span>Home</span></a>
+        <a href="{{ url_for('main.user_dashboard') }}"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a>
+        <a href="{{ url_for('main.explore') }}"><i class="fas fa-search"></i><span>Explore</span></a>
+        <a href="{{ url_for('main.rifter') }}"><i class="fas fa-book-reader"></i><span>Rifter</span></a>
+        <a href="#"><i class="fas fa-heart"></i><span>Favorite</span></a>
+        <a href="{{ url_for('main.community') }}"><i class="fas fa-users"></i><span>Community</span></a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="dynamic-greeting" id="dynamic-greeting">
+            <!-- Greeting will be inserted by JS -->
+        </div>
+        <!-- Most Popular Section -->
+        <div class="section">
+            <h3>Most Popular</h3>
+            <div class="book-list">
+                {% for book in most_popular_books %}
+                    <div class="book-item" data-description="{{ book.description|e }}" data-genres="{{ book.genres|map(attribute='name')|join(',') }}">
+                        <a href="{{ url_for('main.read_book', book_id=book.id) }}">
+                            <img src="{{ url_for('static', filename=book.image_url) }}" alt="{{ book.title }}" class="book-cover">
+                        </a>
+                        <h4>{{ book.title }}</h4>
+                        <p>{{ book.author }}</p>
+                    </div>
+                {% else %}
+                    <p>No books found.</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Readers' Choice Section -->
+        <div class="section">
+            <h3>Readers' Choice</h3>
+            <div class="book-list">
+                {% for book in readers_choice_books %}
+                    <div class="book-item" data-description="{{ book.description|e }}" data-genres="{{ book.genres|map(attribute='name')|join(',') }}">
+                        <a href="{{ url_for('main.read_book', book_id=book.id) }}">
+                            <img src="{{ url_for('static', filename=book.image_url) }}" alt="{{ book.title }}" class="book-cover">
+                        </a>
+                        <h4>{{ book.title }}</h4>
+                        <p>{{ book.author }}</p>
+                        {% if current_user.is_admin %}
+                            <p style="font-size:12px; color:#888;">Views: {{ book.views }}</p>
+                        {% endif %}
+                        <div class="book-actions">
+                            <a href="{{ url_for('main.read_book', book_id=book.id) }}" class="btn btn-sm btn-primary">
+                                <i class="fas fa-book-open"></i> Read
+                            </a>
+                            <button class="btn btn-sm btn-outline-primary add-favorite" data-book-id="{{ book.id }}">
+                                <i class="far fa-heart"></i> Favorite
+                            </button>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <div id="book-popup" class="book-popup">
+        <div class="popup-title"><i class="fas fa-info-circle"></i> Description</div>
+        <div class="popup-desc"></div>
+        <div class="popup-genres"></div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const avatarBtn = document.getElementById('avatar-btn');
+            const avatarMenu = document.getElementById('avatar-menu');
+            document.addEventListener('click', function(event) {
+                // Toggle dropdown on avatar click
+                if (avatarBtn.contains(event.target)) {
+                    avatarMenu.style.display = avatarMenu.style.display === 'block' ? 'none' : 'block';
+                } else {
+                    // Hide dropdown if clicked outside
+                    avatarMenu.style.display = 'none';
+                }
+            });
+        });
+        </script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+    const bell = document.getElementById('notification-bell');
+    const menu = document.getElementById('notification-menu');
+    let notificationsMarked = false;
+    document.addEventListener('click', function(event) {
+        if (bell && bell.contains(event.target)) {
+            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+            // Mark notifications as read only the first time the dropdown is opened
+            if (menu.style.display === 'block' && !notificationsMarked) {
+                fetch('/notifications/mark_read', {method: 'POST', headers: {'X-Requested-With': 'XMLHttpRequest'}})
+                  .then(response => response.json())
+                  .then(data => {
+                      if (data.success) {
+                          // Optionally, hide the badge immediately
+                          const badge = bell.querySelector('.notification-badge');
+                          if (badge) badge.style.display = 'none';
+                          notificationsMarked = true;
+                      }
+                  });
+            }
+        } else {
+            if (menu) menu.style.display = 'none';
+        }
+    });
+});
+        </script>
+  <script>
+// Theme switching logic
+function applyTheme(theme) {
+    if (theme === 'dark') {
+        document.body.classList.add('dark-mode');
+        document.getElementById('theme-toggle-btn').innerHTML = '<i class="fas fa-sun"></i>';
+    } else {
+        document.body.classList.remove('dark-mode');
+        document.getElementById('theme-toggle-btn').innerHTML = '<i class="fas fa-moon"></i>';
+    }
+}
+function toggleTheme() {
+    const isDark = document.body.classList.toggle('dark-mode');
+    const theme = isDark ? 'dark' : 'light';
+    localStorage.setItem('theme', theme);
+    applyTheme(theme);
+}   
+document.getElementById('theme-toggle-btn').addEventListener('click', toggleTheme);
+// On page load, set theme from localStorage
+const savedTheme = localStorage.getItem('theme') || 'light';
+applyTheme(savedTheme);
+
+// Dynamic greeting logic
+function getGreeting() {
+    const hour = new Date().getHours();
+    if (hour < 12) return "Good morning";
+    if (hour < 18) return "Good afternoon";
+    return "Good evening";
+}
+document.addEventListener('DOMContentLoaded', function() {
+    // Set greeting
+    const username = "{{ username }}";
+    const greeting = getGreeting() + (username ? `, ${username}!` : "!");
+    document.getElementById('dynamic-greeting').textContent = greeting;
+
+    // Set theme icon on reload
+    applyTheme(localStorage.getItem('theme') || 'light');
+});
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.add-favorite').forEach(button => {
+            button.addEventListener('click', function() {
+                const bookId = this.getAttribute('data-book-id');
+                fetch('/favorites', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ book_id: bookId })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        alert('Book added to favorites!');
+                    } else {
+                        alert(data.message);
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            });
+        });
+    });
+</script>
+<script>
+    // Sidebar toggle logic
+    document.addEventListener('DOMContentLoaded', function() {
+        const sidebar = document.getElementById('sidebar');
+        const toggleBtn = document.getElementById('sidebar-toggle-btn');
+        const mainContent = document.querySelector('.main-content');
+        // Save state in localStorage
+        if (localStorage.getItem('sidebar-collapsed') === 'true') {
+            sidebar.classList.add('sidebar-collapsed');
+            mainContent.style.marginLeft = '0';
+        }
+        toggleBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            sidebar.classList.toggle('sidebar-collapsed');
+            if (sidebar.classList.contains('sidebar-collapsed')) {
+                mainContent.style.marginLeft = '0';
+            } else {
+                mainContent.style.marginLeft = '220px';
+            }
+            localStorage.setItem('sidebar-collapsed', sidebar.classList.contains('sidebar-collapsed'));
+        });
+    });
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const popup = document.getElementById('book-popup');
+    let popupTimeout = null;
+    document.querySelectorAll('.book-card, .book-item').forEach(function(card) {
+        card.addEventListener('mouseenter', function(e) {
+            let bookDesc = card.getAttribute('data-description') || '';
+            let bookGenres = card.getAttribute('data-genres') ? card.getAttribute('data-genres').split(',') : [];
+            popup.querySelector('.popup-desc').textContent = bookDesc;
+            const genresDiv = popup.querySelector('.popup-genres');
+            genresDiv.innerHTML = '';
+            (bookGenres || []).forEach(function(g) {
+                const span = document.createElement('span');
+                span.className = 'badge';
+                span.textContent = g;
+                genresDiv.appendChild(span);
+            });
+            // Position popup: always top right of card
+            const rect = card.getBoundingClientRect();
+            const popupRect = popup.getBoundingClientRect();
+            let offsetX = 12;
+            let offsetY = -8;
+            let top = rect.top + offsetY;
+            let left = rect.right + offsetX;
+            // Prevent overflow right
+            if (left + popupRect.width > window.innerWidth - 8) {
+                left = window.innerWidth - popupRect.width - 8;
+            }
+            // Prevent overflow bottom
+            if (top + popupRect.height > window.innerHeight - 8) {
+                top = window.innerHeight - popupRect.height - 8;
+            }
+            // Prevent overflow top
+            if (top < 8) top = 8;
+            popup.style.top = `${top}px`;
+            popup.style.left = `${left}px`;
+            popup.classList.add('active');
+            popup.classList.remove('arrow-below', 'arrow-above');
+        });
+        card.addEventListener('mouseleave', function() {
+            popupTimeout = setTimeout(() => popup.classList.remove('active'), 100);
+        });
+    });
+    popup.addEventListener('mouseenter', function() {
+        if (popupTimeout) clearTimeout(popupTimeout);
+    });
+    popup.addEventListener('mouseleave', function() {
+        popup.classList.remove('active');
+    });
+});
+</script>
+</body>
+</html>

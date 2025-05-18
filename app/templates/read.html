@@ -1,0 +1,846 @@
+{% extends "line.html" %}
+
+
+{% block content %}
+<div class="container">
+    <div class="book-container">
+        <div class="book-header">
+            {% if book %}
+                <h1>{{ book.title }}</h1>
+                <h3>by {{ book.author }}</h3>
+                <input type="hidden" name="book_id" value="{{ book.id }}">
+                {% else %}
+                <p>Book not found.</p>
+            {% endif %}
+        </div>
+        <iframe src="{{ url_for('static', filename=book.file_path) }}" width="100%" height="100%"></iframe>
+    </div>
+
+    <div class="ai-response-container">
+        <div id="aiResponses"></div>
+    </div>
+
+    <div class="chat-container" id="chat-container">
+        <div class="chat-icon" id="chat-icon" onclick="toggleChat()">
+            <span style="font-size: 24px;">💬</span>
+        </div>
+        <div class="chat-content" id="chat-content">
+            <div class="chat-header">
+                <h2>Rifter Chat</h2>
+                <button onclick="toggleChat()" style="float: right;">Close</button>
+            </div>
+            
+            <div class="chat-history" id="chat-history">
+                <!-- Chat messages will be added here -->
+            </div>
+            <div class="functionality-buttons">
+                <button class="function-btn active" data-function="general">General</button>
+                <button class="function-btn" data-function="definition">Definition</button>
+                <button class="function-btn" data-function="synonyms">Synonyms</button>
+                <button class="function-btn" data-function="explanation">Explanation</button>
+                <button class="function-btn" data-function="translation">Translation</button>
+                <button class="function-btn" data-function="cultural">Cultural/Historic</button>
+            </div>
+
+            <div class="input-container">
+                <textarea id="user-question" placeholder="Ask a question about the book..."></textarea>
+                <button onclick="sendQuestion()">Ask Rifter</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+:root {
+    --bg-color: #ffffff;
+    --text-color: #212529;
+    --border-color: #dee2e6;
+    --chat-bg: #f8f9fa;
+    --user-message-bg: #e3f2fd;
+    --button-bg: #007bff;
+    --button-text: #ffffff;
+    --header-bg: #f8f9fa;
+    --input-bg: #ffffff;
+    --chat-text: #212529;
+    --function-btn-bg: #e9ecef; /* Light mode button background */
+    --function-btn-active-bg: #007bff; /* Active button background */
+    --function-btn-hover-bg: #0056b3; /* Hover button background */
+}
+
+body.dark-mode {
+    --bg-color: #1a1a1a;
+    --text-color: #ffffff;
+    --border-color: #444444;
+    --chat-bg: #2a2a2a;
+    --user-message-bg: #3a3a3a;
+    --button-bg: #0056b3;
+    --button-text: #ffffff;
+    --header-bg: #2a2a2a;
+    --input-bg: #2a2a2a;
+    --chat-text: #0c0c0c;
+    --function-btn-bg: #555555;
+    --function-btn-active-bg: #007bff;
+    --function-btn-hover-bg: #0056b3;
+}
+
+.functionality-buttons {
+    display: flex;
+    flex-wrap: wrap; /* Allow wrapping into multiple lines */
+    gap: 5px;
+    padding: 10px;
+    background: var(--header-bg);
+    border-bottom: 1px solid var(--border-color);
+    justify-content: flex-start; /* Align buttons to the start */
+}
+
+.function-btn {
+    flex: 1 1 calc(16% - 10px); /* Adjust width for four buttons per row */
+    padding: 8px 10px; /* Adjust padding */
+    border: 1px solid var(--border-color); /* Add border for better definition */
+    border-radius: 4px;
+    background: var(--function-btn-bg);
+    color: var(--text-color);
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.2s; /* Add smooth transition */
+    white-space: nowrap;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add subtle shadow */
+}
+
+.function-btn.active,
+.function-btn:hover {
+     background: var(--function-btn-active-bg);
+    color: var(--button-text);
+    transform: translateY(-2px); /* Slight lift effect on hover */
+}
+
+.function-btn.active {
+    color: var(--button-text);
+}
+
+.container {
+    display: flex;
+    height: calc(100vh - 50px); /* Adjusted navbar height */
+    gap: 10px;
+    padding: 10px; /* Reduced padding */
+    margin-left: 0; /* Adjust margin for responsive behavior */
+    flex-direction: row;
+    background-color: var(--bg-color);
+    transition: margin-left 0.3s; /* Smooth transition for sidebar collapse */
+}
+
+.book-container {
+    flex: 1; /* Allow the book container to take available space */
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    overflow: hidden;
+    height: 100%;
+    background-color: var(--bg-color);
+}
+
+.chat-container {
+    position: fixed; /* Fix the chat container to the bottom right */
+    bottom: 20px; /* Distance from the bottom */
+    right: 20px; /* Distance from the right */
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background-color: var(--bg-color);
+    transition: width 0.3s, height 0.3s; /* Smooth transition for size change */
+    z-index: 1000; /* Ensure it appears above other content */
+    max-width: calc(100% - 40px); /* Prevent it from exceeding the viewport width */
+    max-height: calc(100vh - 40px); /* Prevent it from exceeding the viewport height */
+}
+
+.chat-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px; /* Increased width for the icon */
+    height: 60px; /* Increased height for the icon */
+    background-color: var(--header-bg);
+    border-radius: 50%; /* Make it circular */
+    cursor: pointer;
+    transition: background-color 0.3s; /* Smooth transition for background */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); /* Add shadow for depth */
+}
+
+.chat-icon:hover {
+    background-color: var(--button-bg); /* Change background on hover */
+}
+
+.chat-content {
+    display: flex;
+    flex-direction: column;
+    max-width: 100%; /* Prevent it from exceeding the width of its container */
+    width: 300px; /* Set a fixed width */
+    max-height: calc(100vh - 100px); /* Prevent it from exceeding the viewport height */
+    overflow: hidden; /* Hide overflow */
+}
+
+.chat-container.expanded .chat-content {
+    display: flex; /* Show content when expanded */
+}
+
+.chat-container.expanded .chat-icon {
+    display: none; /* Hide icon when expanded */
+}
+
+.book-header,
+.chat-header {
+    padding: 5px;
+    background: var(--header-bg);
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-color);
+}
+
+.chat-history {
+    flex: 1;
+    overflow-y: auto; /* Enable vertical scrolling */
+    padding: 10px;
+    background: var(--chat-bg);
+    border-radius: 8px;
+    max-height: calc(100vh - 200px); /* Adjust based on your layout */
+    color: var(--chat-text);
+}
+
+.input-container {
+    display: flex;
+    gap: 10px;
+    padding: 20px;
+    background: var(--bg-color);
+}
+
+.textarea {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    resize: none;
+    min-height: 50px;
+    background: var(--input-bg);
+    color: var(--text-color);
+}
+
+.button {
+    padding: 10px 20px;
+    background: var(--button-bg);
+    color: var(--button-text);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.button:hover {
+    background-color: var(--button-bg);
+    opacity: 0.9;
+}
+
+.button:disabled {
+    background: #cccccc;
+    cursor: not-allowed;
+}
+
+.chat-message {
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 8px;
+    max-width: 80%;
+    color: var(--chat-text);
+}
+
+.user-message {
+    background: var(--user-message-bg);
+    margin-left: 20%;
+}
+
+.ai-message {
+    background: var(--chat-bg);
+    margin-right: 20%;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-color);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--border-color);
+    opacity: 0.8;
+}
+.bookmark-btn {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.bookmark-btn:hover {
+    background-color: #45a049;
+}
+.toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #4CAF50;
+    color: white;
+    padding: 15px 25px;
+    border-radius: 5px;
+    z-index: 1000;
+    animation: slideIn 0.5s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.ai-response-container {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        max-width: 400px;
+        width: 90%;
+        z-index: 1000;
+    }
+
+    .ai-response-card {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    margin-bottom: 15px;
+    transition: transform 0.3s ease;
+    max-height: 200px; /* Set a maximum height */
+    max-width: 100%; /* Prevent it from exceeding the width of its container */
+    width: 300px; /* Set a fixed width */
+    overflow-y: auto; /* Enable vertical scrolling */
+}
+
+.ai-response-card:hover {
+    transform: translateY(-5px);
+}
+
+.response-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.response-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(45deg, #4a90e2, #357abd);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    margin-right: 15px;
+}
+
+.response-content {
+    font-size: 15px;
+    line-height: 1.6;
+    color: #2d3748;
+    max-width: 90%;
+}
+
+.response-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 8px;
+}
+
+.response-text {
+    font-size: 14px;
+    color: #4a5568;
+    margin-bottom: 10px;
+}
+
+.response-details {
+    font-size: 13px;
+    color: #718096;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(30px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+.chat-history {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px;
+}
+
+.chat-message {
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 5px;
+    max-width: 80%;
+}
+
+.user-message {
+    background-color: #e3f2fd;
+    margin-left: auto;
+}
+
+.ai-message {
+    background-color: #f5f5f5;
+    margin-right: auto;
+}
+
+.message-content {
+    word-wrap: break-word;
+}
+
+.message-content strong {
+    color: #333;
+    font-weight: bold;
+}
+
+/* Add a class for when the sidebar is collapsed */
+.sidebar-collapsed .container {
+    margin-left: 200px; /* Adjust this value based on your sidebar width */
+}
+
+.sidebar-collapsed .book-container {
+    flex: 1; /* Ensure it takes full width when sidebar is collapsed */
+}
+
+.chat-header button {
+    background-color: #ff4d4d; /* Red background */
+    color: white; /* White text */
+    border: none; /* No border */
+    border-radius: 4px; /* Rounded corners */
+    padding: 5px 10px; /* Padding */
+    cursor: pointer; /* Pointer cursor */
+}
+
+.chat-header button:hover {
+    background-color: #ff1a1a; /* Darker red on hover */
+}
+
+@media (max-width: 600px) {
+    .ai-response-card, .chat-content {
+        width: 90%; /* Use 90% of the screen width on smaller devices */
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Store bookId as a global variable
+let bookId;
+let currentFunction = 'general';
+// Initialize bookId when the script loads
+document.addEventListener('DOMContentLoaded', () => {
+    bookId = document.querySelector('input[name="book_id"]').value;
+    loadConversation();
+
+     // Add functionality button click handlers
+     const functionButtons = document.querySelectorAll('.function-btn');
+    functionButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            // Remove active class from all buttons
+            functionButtons.forEach(btn => btn.classList.remove('active'));
+            // Add active class to clicked button
+            button.classList.add('active');
+            // Update current function
+            currentFunction = button.dataset.function;
+        });
+    });
+
+    // Listen for dark mode changes
+    document.addEventListener('darkModeChange', (event) => {
+        updateTheme();
+    });
+    
+    // Initial theme update
+    updateTheme();
+});
+
+// Update theme based on body class
+function updateTheme() {
+    const isDarkMode = document.body.classList.contains('dark-mode');
+    document.documentElement.style.setProperty('--bg-color', isDarkMode ? '#1a1a1a' : '#ffffff');
+    document.documentElement.style.setProperty('--text-color', isDarkMode ? '#ffffff' : '#212529');
+    document.documentElement.style.setProperty('--border-color', isDarkMode ? '#444444' : '#dee2e6');
+    document.documentElement.style.setProperty('--chat-bg', isDarkMode ? '#2a2a2a' : '#f8f9fa');
+    document.documentElement.style.setProperty('--user-message-bg', isDarkMode ? '#3a3a3a' : '#e3f2fd');
+    document.documentElement.style.setProperty('--button-bg', isDarkMode ? '#0056b3' : '#007bff');
+    document.documentElement.style.setProperty('--button-text', '#ffffff');
+    document.documentElement.style.setProperty('--header-bg', isDarkMode ? '#2a2a2a' : '#f8f9fa');
+    document.documentElement.style.setProperty('--input-bg', isDarkMode ? '#2a2a2a' : '#ffffff');
+    document.documentElement.style.setProperty('--chat-text', isDarkMode ? '#ffffff' : '#212529');
+}
+// Store conversation history in localStorage
+function saveConversation() {
+    if (!bookId) {
+        console.error('Book ID not found');
+        return;
+    }
+    const chatHistory = document.getElementById('chat-history');
+    const messages = Array.from(chatHistory.children)
+        .map(msg => ({
+            type: msg.classList.contains('user-message') ? 'user' : 'ai',
+            text: msg.textContent
+        }));
+    localStorage.setItem('conversation_' + bookId, JSON.stringify(messages));
+}
+
+function loadConversation() {
+    if (!bookId) {
+        console.error('Book ID not found');
+        return;
+    }
+    const messages = JSON.parse(localStorage.getItem('conversation_' + bookId) || '[]');
+    
+    messages.forEach(msg => {
+        const message = document.createElement('div');
+        message.className = 'chat-message ' + (msg.type === 'user' ? 'user-message' : 'ai-message');
+        message.textContent = msg.text;
+    });
+}
+
+async function getLocalBookPath() {
+    if (!bookId) {
+        alert('Book ID not found');
+        return null;
+    }
+    
+    try {
+        const response = await fetch(`/get_book_path/${bookId}`);
+        const data = await response.json();
+        return data.local_path;
+    } catch (error) {
+        console.error('Error getting book path:', error);
+        return null;
+    }
+}
+// Add this at the top of your script
+let isOffline = false;
+
+// Add this function to check offline status
+function checkOfflineStatus() {
+    if (!navigator.onLine) {
+        isOffline = true;
+        alert('You are offline. Your messages will be saved locally.');
+    } else {
+        isOffline = false;
+    }
+}
+
+// Add this to your script
+window.addEventListener('online', checkOfflineStatus);
+window.addEventListener('offline', checkOfflineStatus);
+
+async function sendQuestion() {
+    const question = document.getElementById('user-question').value;
+    const localPath = await getLocalBookPath();
+    
+    if (!question.trim()) {
+        alert('Please enter a question');
+        return;
+    }
+    
+    if (!localPath) {
+        alert('Could not get local book path');
+        return;
+    }
+    
+    const button = document.querySelector('button');
+    button.disabled = true;
+    button.textContent = 'Analyzing...';
+    
+    try {
+        // Add user's question to chat history
+        const userMessage = document.createElement('div');
+        userMessage.className = 'chat-message user-message';
+        userMessage.textContent = `You: ${question} (${currentFunction})`;
+        document.getElementById('chat-history').appendChild(userMessage);
+
+        if (!navigator.onLine) {
+            saveMessageLocally({
+                question: question,
+                function_type: currentFunction,
+                timestamp: new Date().toISOString()
+            });
+            alert('Message saved locally. It will be sent when you\'re back online.');
+        } else {
+            // Try to send the message
+            try {
+                const response = await fetch('/analyze_book', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        book_path: localPath,
+                question: question,
+                function_type: currentFunction
+            })
+        });
+        
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Server error');
+        }
+        
+        const data = await response.json();
+        displayAnswer(data.answer);
+    }catch (error) {
+                // If failed while online, save locally as backup
+                saveMessageLocally({
+                    question: question,
+                    function_type: currentFunction,
+                    timestamp: new Date().toISOString(),
+                    error: error.message
+                });
+                alert('Message saved locally due to server error.');
+            }
+        }
+        // Save the conversation after each message
+        saveConversation();
+    } catch (error) {
+        console.error('Error details:', error);
+        alert(`Error: ${error.message}`);
+    } finally {
+        button.disabled = false;
+        button.textContent = 'Ask Rifter';
+        document.getElementById('user-question').value = ''; // Clear the input
+    }
+}
+
+function displayAnswer(answer) {
+    const chatHistory = document.getElementById('chat-history');
+    const message = document.createElement('div');
+    message.className = 'chat-message ai-message';
+    message.textContent = 'AI: ' + answer;
+    chatHistory.appendChild(message);
+    chatHistory.scrollTop = chatHistory.scrollHeight;
+}
+// Add PWA registration
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+            .then(registration => {
+                console.log('ServiceWorker registration successful');
+                // Check if the service worker is ready
+                if (registration.installing) {
+                    console.log('Service worker installing');
+                } else if (registration.waiting) {
+                    console.log('Service worker installed');
+                } else if (registration.active) {
+                    console.log('Service worker active');
+                }
+            })
+            .catch(err => {
+                console.log('ServiceWorker registration failed: ', err);
+            });
+    });
+}
+// Add this function to save messages locally
+function saveMessageLocally(message) {
+    // Get existing messages
+    let messages = JSON.parse(localStorage.getItem('offlineMessages') || '[]');
+    
+    // Add new message
+    messages.push(message);
+    
+    // Save back to localStorage
+    localStorage.setItem('offlineMessages', JSON.stringify(messages));
+    
+    // Try to sync with server
+    syncOfflineMessages();
+}
+
+// Add this function to sync offline messages
+async function syncOfflineMessages() {
+    if (navigator.onLine) {
+        try {
+            const messages = JSON.parse(localStorage.getItem('offlineMessages') || '[]');
+            if (messages.length > 0) {
+                const response = await fetch('/api/save-offline-messages', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ messages })
+                });
+                
+                if (response.ok) {
+                    localStorage.removeItem('offlineMessages');
+                    alert('Offline messages synced successfully!');
+                }
+            }
+        } catch (error) {
+            console.error('Error syncing offline messages:', error);
+        }
+    }
+}
+
+// Save reading progress
+function saveProgress(progress) {
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.ready.then(registration => {
+            registration.sync.register('save-progress');
+            // Send progress to server
+            fetch('/api/save-progress', {
+                method: 'POST',
+                body: JSON.stringify({ progress })
+            });
+        });
+    }
+}
+
+// Service Worker sync event
+self.addEventListener('sync', event => {
+    if (event.tag === 'save-progress') {
+        // Sync progress with server
+        fetch('/api/sync-progress', {
+            method: 'POST'
+        });
+    }
+});
+
+// Check if offline
+if (!navigator.onLine) {
+    console.log('Offline mode');
+    document.getElementById('user-question').placeholder = 'You are offline. Messages will be saved locally';
+}
+
+// Save messages locally when offline
+function saveMessageLocally(message) {
+    if (!bookId) return;
+    
+    let messages = JSON.parse(localStorage.getItem('offline-messages_' + bookId) || '[]');
+    messages.push(message);
+    localStorage.setItem('offline-messages_' + bookId, JSON.stringify(messages));
+}
+
+// Send offline messages when back online
+function sendOfflineMessages() {
+    if (!bookId) return;
+    
+    const messages = JSON.parse(localStorage.getItem('offline-messages_' + bookId) || '[]');
+    if (messages.length === 0) return;
+    
+    messages.forEach(msg => {
+        fetch('/api/save-offline-message', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(msg)
+        });
+    });
+    
+    localStorage.removeItem('offline-messages_' + bookId);
+}
+
+// Add event listeners
+window.addEventListener('online', sendOfflineMessages);
+window.addEventListener('offline', () => {
+    document.getElementById('user-question').placeholder = 'You are offline. Messages will be saved locally';
+});
+function addAIResponse(responseData) {
+    const container = document.getElementById('aiResponses');
+    const responseCard = document.createElement('div');
+    responseCard.className = 'ai-response-card';
+    
+    // Format the response based on type
+    let formattedResponse = '';
+    if (responseData.type === 'definition') {
+        formattedResponse = `
+            <div class="response-title">Definition</div>
+            <div class="response-text">${responseData.definition}</div>
+            <div class="response-details">Word Type: ${responseData.wordType}</div>
+        `;
+    } else if (responseData.type === 'synonyms') {
+        formattedResponse = `
+            <div class="response-title">Synonyms</div>
+            <div class="response-text">${responseData.synonyms.join(', ')}</div>
+        `;
+    } else if (responseData.type === 'explanation') {
+        formattedResponse = `
+            <div class="response-title">Explanation</div>
+            <div class="response-text">${responseData.explanation}</div>
+        `;
+    } else if (responseData.type === 'translation') {
+        formattedResponse = `
+            <div class="response-title">Translation</div>
+            <div class="response-text">${responseData.translation}</div>
+            <div class="response-details">Language: ${responseData.language}</div>
+        `;
+    } else if (responseData.type === 'cultural') {
+        formattedResponse = `
+            <div class="response-title">Cultural/Historic Context</div>
+            <div class="response-text">${responseData.context}</div>
+        `;
+    }
+
+    responseCard.innerHTML = `
+        <div class="response-header">
+            <div class="response-avatar">AI</div>
+            <span class="response-content">${formattedResponse}</span>
+        </div>
+    `;
+
+    container.insertBefore(responseCard, container.firstChild);
+    responseCard.scrollIntoView({ behavior: 'smooth' });
+}
+
+// Toggle chat function
+function toggleChat() {
+    const chatContainer = document.getElementById('chat-container');
+    const chatContent = document.getElementById('chat-content');
+    const chatIcon = document.getElementById('chat-icon');
+
+    console.log("Toggling chat..."); // Debug log
+
+    // Toggle the expanded class
+    chatContainer.classList.toggle('expanded');
+
+    // Check if the chat is expanded or not
+    if (chatContainer.classList.contains('expanded')) {
+        console.log("Chat expanded"); // Debug log
+        chatContent.style.display = 'flex'; // Show chat content
+        chatIcon.style.display = 'none'; // Hide icon
+    } else {
+        console.log("Chat collapsed"); // Debug log
+        chatContent.style.display = 'none'; // Hide chat content
+        chatIcon.style.display = 'flex'; // Show icon
+    }
+}
+</script>
+{% endblock %}

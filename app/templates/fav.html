@@ -1,0 +1,273 @@
+{% extends "line.html" %}
+
+{% block extra_css %} 
+<style>
+    .ml-220 {
+        margin-left: 230px; /* Adjust this based on sidebar width */
+    }
+
+    .section-title {
+        font-size: 2rem; /* Base font size */
+        margin: 1.5rem 0; /* Margin for spacing */
+        text-align: left; /* Align the heading to the left */
+        margin-left: 20px; /* Add left margin for spacing from the edge */
+        color: var(--text-color); /* Use a variable for text color */
+    }
+
+    @media (max-width: 768px) {
+        .section-title {
+            font-size: 1.5rem; /* Smaller font size for tablets */
+        }
+    }
+
+    @media (max-width: 576px) {
+        .section-title {
+            font-size: 1.2rem; /* Even smaller font size for mobile */
+        }
+    }
+
+    .book-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 1.5rem;
+        margin: 1.5rem 0;
+    }
+
+    .book-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background: #fff; /* Light background for light mode */
+        border-radius: 12px;
+        padding: 0.5rem 0.5rem 1rem 0.5rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        min-width: 140px;
+        max-width: 220px; /* Adjusted for favorites */
+        width: 100%;
+    }
+
+    .book-card img {
+        width: 100%;
+        height: 210px; /* Adjusted height */
+        object-fit: cover;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+        transition: transform 0.2s, box-shadow 0.2s;
+        background: #f8f8f8;
+        display: block;
+        margin: 0 auto 10px auto;
+    }
+
+    .book-card:hover {
+        transform: translateY(-5px) scale(1.02);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .book-card h3 {
+        margin: 0.5rem 0 0 0;
+        font-size: 1.05rem;
+        color: var(--text-color); /* Use a variable for text color */
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        text-align: center;
+        width: 100%;
+    }
+
+    .book-card .author {
+        font-size: 0.9rem;
+        color: #555; /* Darker color for author */
+        margin-bottom: 0.5rem;
+        text-align: center;
+    }
+
+    /* Dark mode styles */
+    body.dark-mode .book-card {
+        background: #23272f; /* Dark background for dark mode */
+        color: #f1f1f1; /* Light text color for dark mode */
+    }
+
+    body.dark-mode .book-card .author {
+        color: #b0b0b0; /* Lighter color for author in dark mode */
+    }
+
+    body.dark-mode .section-title {
+        color: #f1f1f1; /* Light color for heading in dark mode */
+    }
+
+    .book-popup {
+        display: none;
+        position: fixed;
+        min-width: 260px;
+        max-width: 340px;
+        background: #fff; /* Light background for popup */
+        color: #23272f; /* Dark text color for popup */
+        border-radius: 12px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+        padding: 1.1rem 1.2rem;
+        z-index: 9999;
+        text-align: left;
+        font-size: 1rem;
+        line-height: 1.5;
+        border: 1px solid #e0e0e0;
+        transition: opacity 0.18s cubic-bezier(.4, 0, .2, 1), transform 0.18s cubic-bezier(.4, 0, .2, 1);
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    .book-popup.active {
+        display: block;
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    .book-popup .popup-title {
+        font-size: 1.08rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: #4a90e2;
+    }
+
+    .book-popup .popup-desc {
+        margin-bottom: 0.7rem;
+        color: #23272f; /* Dark text color for popup description */
+        max-height: 180px;
+        overflow-y: auto;
+        font-size: 0.98rem;
+    }
+
+    .book-popup .popup-genres {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.35rem;
+        margin-top: 0.2rem;
+    }
+
+    .book-popup .badge {
+        background: #4a90e2;
+        color: #fff;
+        padding: 0.18rem 0.7rem;
+        border-radius: 999px;
+        font-size: 0.78rem;
+        font-weight: 500;
+    }
+
+    /* Dark mode popup styles */
+    body.dark-mode .book-popup {
+        background: #23272f; /* Dark background for popup */
+        color: #f1f1f1; /* Light text color for popup */
+    }
+
+    body.dark-mode .book-popup .popup-desc {
+        color: #e0e0e0; /* Lighter color for description in dark mode */
+    }
+
+    body.dark-mode .book-popup .badge {
+        background: #3a7bc8; /* Dark mode badge color */
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="section">
+    <h2 class="section-title">Your Favorite Books</h2>
+    <div class="book-grid">
+        {% for book in favorites %}
+        <div class="book-card" data-description="{{ book.description }}" data-genres="{{ book.genres|map(attribute='name')|join(',') }}">
+            <a href="{{ url_for('main.read_book', book_id=book.id) }}" class="book-image">
+                <img src="{{ url_for('static', filename=book.image_url) }}" alt="{{ book.title }}" loading="lazy">
+            </a>
+            <h3>{{ book.title }}</h3>
+            <p class="author">by {{ book.author }}</p>
+            <div class="book-actions">
+                <a href="{{ url_for('main.read_book', book_id=book.id) }}" class="btn btn-sm btn-primary">
+                    <i class="fas fa-book-open"></i> Read
+                </a>
+                <button class="btn btn-sm btn-outline-primary remove-favorite" data-book-id="{{ book.id }}">
+                    <i class="far fa-heart"></i> Remove
+                </button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <div class="book-popup" id="book-popup">
+        <div class="popup-title"><i class="fas fa-info-circle"></i> Description</div>
+        <div class="popup-desc"></div>
+        <div class="popup-genres"></div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const removeFavoriteButtons = document.querySelectorAll('.remove-favorite');
+    const popup = document.getElementById('book-popup');
+    let popupTimeout = null;
+
+    removeFavoriteButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const bookId = this.dataset.bookId;
+            removeFromFavorites(bookId);
+        });
+    });
+
+    const bookCards = document.querySelectorAll('.book-card');
+    bookCards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            const description = this.dataset.description;
+            const genres = this.dataset.genres.split(',');
+            popup.querySelector('.popup-desc').textContent = description;
+            const genresDiv = popup.querySelector('.popup-genres');
+            genresDiv.innerHTML = '';
+            genres.forEach(function(g) {
+                const span = document.createElement('span');
+                span.className = 'badge';
+                span.textContent = g;
+                genresDiv.appendChild(span);
+            });
+            // Position popup
+            const rect = card.getBoundingClientRect();
+            const popupRect = popup.getBoundingClientRect();
+            let margin = 10;
+            let top, left;
+            top = rect.bottom + margin;
+            left = rect.left + (rect.width / 2) - (popupRect.width / 2);
+            // Prevent horizontal overflow
+            if (left < 8) left = 8;
+            if (left + popupRect.width > window.innerWidth - 8) left = window.innerWidth - popupRect.width - 8;
+            // Set position
+            popup.style.top = `${top}px`;
+            popup.style.left = `${left}px`;
+            popup.classList.add('active');
+        });
+
+        card.addEventListener('mouseleave', function() {
+            popupTimeout = setTimeout(() => popup.classList.remove('active'), 100);
+        });
+    });
+
+    popup.addEventListener('mouseenter', function() {
+        if (popupTimeout) clearTimeout(popupTimeout);
+    });
+    popup.addEventListener('mouseleave', function() {
+        popup.classList.remove('active');
+    });
+});
+
+function removeFromFavorites(bookId) {
+    fetch(`/favorites/${bookId}`, {
+        method: 'DELETE'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            window.location.reload();
+        }
+    });
+}
+</script>
+{% endblock %}

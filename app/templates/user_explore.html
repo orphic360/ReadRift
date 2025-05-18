@@ -1,0 +1,753 @@
+{% extends "line.html" %}
+
+{% block title %}Explore - ReadRift{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<style>
+    :root {
+        --primary-color: #4a90e2;
+        --secondary-color: #f8f9fa;
+        --accent-color: #ff6b6b;
+        --text-color: #333;
+        --light-gray: #f5f5f5;
+        --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .main-wrapper {
+        display: flex;
+        justify-content: flex-start;
+        background-color: var(--light-gray);
+        margin-left: 0 !important;
+    }
+
+    .explore-container {
+        padding: 2rem;
+        max-width: 1400px;
+        width: 100%;
+        margin-left: 0 !important;
+    }
+    
+    .section-title {
+        font-size: 1.8rem;
+        margin: 2rem 0 1.5rem;
+        padding-bottom: 0.8rem;
+        border-bottom: 2px solid #e0e0e0;
+        color: var(--text-color);
+        position: relative;
+    }
+    
+    .section-title::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 80px;
+        height: 3px;
+        background: var(--primary-color);
+        border-radius: 3px;
+    }
+
+    .book-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 1.5rem;
+        margin: 1.5rem 0;
+        /* Do not set overflow here, so popovers are visible */
+    }
+
+    .book-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background: white;
+        border-radius: 12px;
+        padding: 0.5rem 0.5rem 1rem 0.5rem;
+        box-shadow: var(--shadow);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        animation: fadeIn 0.5s ease-out;
+        min-width: 140px;
+        max-width: 140px;
+        width: 140px;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .book-card:hover {
+        transform: translateY(-5px) scale(1.02);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .book-card img,
+    .book-cover {
+        width: 140px;
+        height: 210px;
+        object-fit: cover;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+        transition: transform 0.2s, box-shadow 0.2s;
+        background: #f8f8f8;
+        display: block;
+        margin: 0 auto 10px auto;
+    }
+    .book-card img:hover,
+    .book-cover:hover {
+        transform: scale(1.04);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.18);
+    }
+
+    .book-card h3 {
+        margin: 0.5rem 0 0 0;
+        font-size: 1.05rem;
+        color: var(--text-color);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        text-align: center;
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .book-card .author {
+        font-size: 0.9rem;
+        color: #555;
+        margin-bottom: 0.5rem;
+        text-align: center;
+    }
+
+    .book-genres {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+        margin: 0.8rem 0;
+    }
+
+    .book-genres .badge {
+        background: var(--primary-color);
+        color: white;
+        padding: 0.3rem 0.6rem;
+        border-radius: 15px;
+        font-size: 0.75rem;
+        font-weight: 500;
+        transition: all 0.2s ease;
+    }
+
+    .book-genres .badge:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .book-actions {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 1rem;
+    }
+
+    .btn {
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        font-size: 0.9rem;
+    }
+
+    .btn-primary {
+        background: var(--primary-color);
+        border: none;
+    }
+
+    .btn-outline-primary {
+        border: 1px solid var(--primary-color);
+        color: var(--primary-color);
+        background: transparent;
+    }
+
+    .btn-outline-primary:hover {
+        background: var(--primary-color);
+        color: white;
+    }
+
+    .filters {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        background: white;
+        padding: 1.2rem;
+        border-radius: 10px;
+        box-shadow: var(--shadow);
+    }
+
+    .filters select, 
+    .filters button {
+        padding: 0.7rem 1.2rem;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+        font-size: 0.95rem;
+        transition: all 0.2s ease;
+    }
+
+    .filters select:focus, 
+    .filters button:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
+    }
+
+    .filters button {
+        background: var(--primary-color);
+        color: white;
+        border: none;
+        cursor: pointer;
+        font-weight: 500;
+    }
+
+    .filters button:hover {
+        background: #3a7bc8;
+        transform: translateY(-1px);
+    }
+
+    .view-all a {
+        color: var(--primary-color);
+        text-decoration: none;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.2s ease;
+    }
+
+    .view-all a:hover {
+        color: #3a7bc8;
+        text-decoration: none;
+    }
+
+    .view-all a i {
+        transition: transform 0.2s ease;
+    }
+
+    .view-all a:hover i {
+        transform: translateX(3px);
+    }
+
+    /* Loading animation */
+    @keyframes pulse {
+        0% { opacity: 0.6; }
+        50% { opacity: 1; }
+        100% { opacity: 0.6; }
+    }
+
+    .skeleton {
+        background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+        background-size: 200% 100%;
+        animation: pulse 1.5s infinite;
+        border-radius: 8px;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1200px) {
+        .explore-container {
+            padding: 1.5rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .filters {
+            flex-direction: column;
+        }
+        
+        .filters select, 
+        .filters button {
+            width: 100%;
+            max-width: 100%;
+        }
+
+        .book-grid {
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 1rem;
+        }
+
+        .book-card {
+            padding: 1rem;
+        }
+
+        .book-card img {
+            height: 200px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .book-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    /* Dark mode overrides */
+    body.dark-mode .book-card {
+        background: #23272f;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+    }
+    body.dark-mode .book-card h3,
+    body.dark-mode .section-title {
+        color: #f1f1f1;
+    }
+    body.dark-mode .book-card .author {
+        color: #b0b0b0;
+    }
+    body.dark-mode .book-genres .badge {
+        background: #3a7bc8;
+        color: #fff;
+    }
+
+    /* Remove the overlay from inside the card */
+    .book-card .book-overlay { display: none !important; }
+
+    /* Floating popup styles */
+    .book-popup {
+        display: none;
+        position: fixed;
+        min-width: 260px;
+        max-width: 340px;
+        background: #fff;
+        color: #23272f;
+        border-radius: 12px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+        padding: 1.1rem 1.2rem 1.1rem 1.2rem;
+        z-index: 9999;
+        text-align: left;
+        font-size: 1rem;
+        line-height: 1.5;
+        border: 1px solid #e0e0e0;
+        transition: opacity 0.18s cubic-bezier(.4,0,.2,1), transform 0.18s cubic-bezier(.4,0,.2,1);
+        opacity: 0;
+        pointer-events: none;
+    }
+    .book-popup.active {
+        display: block;
+        opacity: 1;
+        pointer-events: auto;
+        animation: fadeIn 0.18s;
+    }
+    .book-popup .popup-title {
+        font-size: 1.08rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: #4a90e2;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .book-popup .popup-desc {
+        margin-bottom: 0.7rem;
+        color: #23272f;
+        max-height: 180px;
+        overflow-y: auto;
+        font-size: 0.98rem;
+    }
+    .book-popup .popup-genres {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.35rem;
+        margin-top: 0.2rem;
+    }
+    .book-popup .badge {
+        background: #4a90e2;
+        color: #fff;
+        padding: 0.18rem 0.7rem;
+        border-radius: 999px;
+        font-size: 0.78rem;
+        font-weight: 500;
+        box-shadow: 0 1px 4px rgba(58,123,200,0.08);
+        border: none;
+        margin-bottom: 0.1rem;
+        letter-spacing: 0.01em;
+    }
+    body.dark-mode .book-popup {
+        background: #23272f;
+        color: #f1f1f1;
+        border: 1px solid #333a4a;
+    }
+    body.dark-mode .book-popup .popup-title {
+        color: #7bb6ff;
+    }
+    body.dark-mode .book-popup .popup-desc {
+        color: #e0e0e0;
+    }
+    body.dark-mode .book-popup .badge {
+        background: #3a7bc8;
+        color: #fff;
+    }
+    .book-popup.arrow-below::before,
+    .book-popup.arrow-above::before {
+        content: '';
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        border: solid transparent;
+        height: 0;
+        width: 0;
+        pointer-events: none;
+    }
+    .book-popup.arrow-below::before {
+        top: -10px;
+        border-width: 0 10px 10px 10px;
+        border-bottom-color: #fff;
+        z-index: 10001;
+    }
+    body.dark-mode .book-popup.arrow-below::before {
+        border-bottom-color: #23272f;
+    }
+    .book-popup.arrow-above::before {
+        bottom: -10px;
+        border-width: 10px 10px 0 10px;
+        border-top-color: #fff;
+        z-index: 10001;
+    }
+    body.dark-mode .book-popup.arrow-above::before {
+        border-top-color: #23272f;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="main-wrapper">
+    <div class="explore-container">
+        <div class="filters animate__animated animate__fadeIn">
+            <select name="genre" id="genre" class="form-select">
+                <option value="">All Genres</option>
+                {% for g in genres %}
+                    <option value="{{ g }}" {% if request.args.get('genre') == g %}selected{% endif %}>{{ g }}</option>
+                {% endfor %}
+            </select>
+            <select name="sort" id="sort" class="form-select">
+                <option value="popularity">Most Popular</option>
+                <option value="newest">Newest</option>
+                <option value="rating">Highest Rated</option>
+            </select>
+            <button onclick="applyFilters()" class="btn-filter">
+                <i class="fas fa-filter"></i> Apply Filters
+            </button>
+        </div>
+
+        <!-- Recommended Books Section -->
+        {% if recommended_books %}
+        <div class="recommended-section animate__animated animate__fadeIn">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2 class="section-title">Recommended For You</h2>
+                <div class="view-all">
+                    <a href="{{ url_for('main.explore', sort='recommended') }}">
+                        View All <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="book-grid">
+                {% set seen_books = [] %}
+                {% for book in recommended_books if book.id not in seen_books %}
+                    {% if seen_books.append(book.id) %}{% endif %}
+                    <div class="book-card animate__animated animate__fadeInUp" style="animation-delay: {{ loop.index * 0.05 }}s" data-description="{{ book.description|e }}" data-genres="{{ book.genres|map(attribute='name')|join(',') }}">
+                        <a href="{{ url_for('main.read_book', book_id=book.id) }}" class="book-image">
+                            <img src="{{ url_for('static', filename=book.image_url) }}" alt="{{ book.title }}" loading="lazy" class="book-cover">
+                        </a>
+                        <h3>{{ book.title }}</h3>
+                        <p class="author">by {{ book.author }}</p>
+                        <div class="book-actions">
+                            <a href="{{ url_for('main.read_book', book_id=book.id) }}" class="btn btn-sm btn-primary">
+                                <i class="fas fa-book-open"></i> Read
+                            </a>
+                            <button class="btn btn-sm btn-outline-primary add-favorite" data-book-id="{{ book.id }}">
+                                <i class="far fa-heart"></i> Save
+                            </button>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+       
+        <!-- Genre Sections -->
+        {% for genre, books in genre_books.items() %}
+        <div class="genre-section animate__animated animate__fadeIn">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2 class="section-title">{{ genre }}</h2>
+                <div class="view-all">
+                    <a href="{{ url_for('main.explore', genre=genre) }}">
+                        View All <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="book-grid">
+                {% for book in books[:8] %}
+                <div class="book-card animate__animated animate__fadeInUp" style="animation-delay: {{ loop.index * 0.05 }}s" data-description="{{ book.description|e }}" data-genres="{{ book.genres|map(attribute='name')|join(',') }}">
+                    <a href="{{ url_for('main.read_book', book_id=book.id) }}" class="book-image">
+                        <img src="{{ url_for('static', filename=book.image_url) }}" alt="{{ book.title }}" loading="lazy" class="book-cover">
+                    </a>
+                    <h3>{{ book.title }}</h3>
+                    <p class="author">by {{ book.author }}</p>
+                    <div class="book-actions">
+                        <a href="{{ url_for('main.read_book', book_id=book.id) }}" class="btn btn-sm btn-primary">
+                            <i class="fas fa-book-open"></i> Read
+                        </a>
+                        <button class="btn btn-sm btn-outline-primary add-favorite" data-book-id="{{ book.id }}">
+                            <i class="far fa-heart"></i> Save
+                        </button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div id="book-popup" class="book-popup">
+    <div class="popup-title"><i class="fas fa-info-circle"></i> Description</div>
+    <div class="popup-desc"></div>
+    <div class="popup-genres"></div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize tooltips
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+
+        // Add smooth scroll to top
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        // Initialize favorite buttons
+        initializeFavoriteButtons();
+
+        const popup = document.getElementById('book-popup');
+        let popupTimeout = null;
+        document.querySelectorAll('.book-card').forEach(function(card) {
+            card.addEventListener('mouseenter', function(e) {
+                let bookDesc = card.getAttribute('data-description') || '';
+                let bookGenres = card.getAttribute('data-genres') ? card.getAttribute('data-genres').split(',') : [];
+                popup.querySelector('.popup-desc').textContent = bookDesc;
+                const genresDiv = popup.querySelector('.popup-genres');
+                genresDiv.innerHTML = '';
+                (bookGenres || []).forEach(function(g) {
+                    const span = document.createElement('span');
+                    span.className = 'badge';
+                    span.textContent = g;
+                    genresDiv.appendChild(span);
+                });
+                // Position popup
+                const rect = card.getBoundingClientRect();
+                const popupRect = popup.getBoundingClientRect();
+                let margin = 10;
+                let top, left, arrowClass;
+                // Prefer below, but if not enough space, show above
+                if (rect.bottom + margin + popupRect.height < window.innerHeight) {
+                    top = rect.bottom + margin;
+                    arrowClass = 'arrow-below';
+                } else {
+                    top = rect.top - popupRect.height - margin;
+                    arrowClass = 'arrow-above';
+                }
+                left = rect.left + (rect.width / 2) - (popupRect.width / 2);
+                // Prevent horizontal overflow
+                if (left < 8) left = 8;
+                if (left + popupRect.width > window.innerWidth - 8) left = window.innerWidth - popupRect.width - 8;
+                // Set position and arrow
+                popup.style.top = `${top}px`;
+                popup.style.left = `${left}px`;
+                popup.classList.add('active');
+                popup.classList.remove('arrow-below', 'arrow-above');
+                popup.classList.add(arrowClass);
+            });
+            card.addEventListener('mouseleave', function() {
+                popupTimeout = setTimeout(() => popup.classList.remove('active'), 100);
+            });
+        });
+        popup.addEventListener('mouseenter', function() {
+            if (popupTimeout) clearTimeout(popupTimeout);
+        });
+        popup.addEventListener('mouseleave', function() {
+            popup.classList.remove('active');
+        });
+    });
+
+    function applyFilters() {
+        const genre = document.getElementById('genre').value;
+        const sort = document.getElementById('sort').value;
+        const params = new URLSearchParams();
+        
+        if (genre) params.set('genre', genre);
+        if (sort && sort !== 'popularity') params.set('sort', sort);
+        
+        window.location.href = window.location.pathname + (params.toString() ? '?' + params.toString() : '');
+    }
+
+    function initializeFavoriteButtons() {
+        document.querySelectorAll('.add-favorite').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                const bookId = this.getAttribute('data-book-id');
+                const icon = this.querySelector('i');
+                
+                // Add loading state
+                this.disabled = true;
+                icon.className = 'fas fa-spinner fa-spin';
+                
+                fetch(`/favorite/${bookId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message) {
+                        // Update UI
+                        if (data.is_favorite) {
+                            this.classList.remove('btn-outline-primary');
+                            this.classList.add('btn-primary');
+                            icon.className = 'fas fa-heart';
+                            this.innerHTML = `<i class="fas fa-heart"></i> Saved`;
+                        } else {
+                            this.classList.remove('btn-primary');
+                            this.classList.add('btn-outline-primary');
+                            icon.className = 'far fa-heart';
+                            this.innerHTML = `<i class="far fa-heart"></i> Save`;
+                        }
+                        
+                        // Show toast notification
+                        showToast(data.message, 'success');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showToast('An error occurred', 'error');
+                })
+                .finally(() => {
+                    this.disabled = false;
+                });
+            });
+        });
+    }
+
+    function showToast(message, type = 'info') {
+        // Create toast element
+        const toast = document.createElement('div');
+        toast.className = `toast-notification ${type}`;
+        toast.innerHTML = `
+            <div class="toast-message">${message}</div>
+            <button class="toast-close">&times;</button>
+        `;
+        
+        // Add to container or create one
+        let container = document.querySelector('.toast-container');
+        if (!container) {
+            container = document.createElement('div');
+            container.className = 'toast-container';
+            document.body.appendChild(container);
+        }
+        
+        container.appendChild(toast);
+        
+        // Show toast
+        setTimeout(() => {
+            toast.classList.add('show');
+        }, 10);
+        
+        // Auto remove
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => {
+                toast.remove();
+                if (container.children.length === 0) {
+                    container.remove();
+                }
+            }, 300);
+        }, 5000);
+        
+        // Close button
+        toast.querySelector('.toast-close').addEventListener('click', () => {
+            toast.classList.remove('show');
+            setTimeout(() => {
+                toast.remove();
+                if (container.children.length === 0) {
+                    container.remove();
+                }
+            }, 300);
+        });
+    }
+
+    // Add CSS for toast notifications
+    const toastStyles = document.createElement('style');
+    toastStyles.textContent = `
+        .toast-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1100;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 350px;
+        }
+        
+        .toast-notification {
+            background: white;
+            border-radius: 8px;
+            padding: 12px 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transform: translateX(120%);
+            transition: transform 0.3s ease;
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+        }
+        
+        .toast-notification.show {
+            transform: translateX(0);
+            max-height: 200px;
+            opacity: 1;
+            margin-bottom: 10px;
+        }
+        
+        .toast-notification.success {
+            border-left: 4px solid #28a745;
+        }
+        
+        .toast-notification.error {
+            border-left: 4px solid #dc3545;
+        }
+        
+        .toast-notification.info {
+            border-left: 4px solid #17a2b8;
+        }
+        
+        .toast-message {
+            margin-right: 15px;
+        }
+        
+        .toast-close {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: #6c757d;
+            padding: 0;
+            line-height: 1;
+        }
+        
+        .toast-close:hover {
+            color: #343a40;
+        }
+    `;
+    document.head.appendChild(toastStyles);
+</script>
+{% endblock %}

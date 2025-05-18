@@ -1,0 +1,635 @@
+{% extends "line.html" %}
+
+{% block title %}Dashboard - ReadRift{% endblock %}
+
+
+{% block extra_css %}
+<style>
+    :root {
+        --content-max-width: 1100px;
+    }
+
+    .content-wrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        min-height: 100vh;
+        background: var(--primary-bg);
+        margin-left: 220px;
+        box-sizing: border-box;
+        transition: margin-left 0.3s;
+        width: 100vw;
+        max-width: 100vw;
+        overflow-x: hidden;
+    }
+
+    .sidebar-collapsed ~ .content-wrapper {
+        margin-left: 0 !important;
+    }
+
+    .main-content {
+        width: 100%;
+        max-width: var(--content-max-width);
+        margin-top: 80px; /* match navbar height */
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        box-sizing: border-box;
+        padding: 0 24px 0 16px; /* subtle left padding for breathing room */
+        overflow-x: hidden;
+        margin-left: 0 !important;
+    }
+
+    .user-profile {
+        display: flex;
+        align-items: center;
+        gap: 24px;
+        background: var(--secondary-bg);
+        border-radius: 18px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+        padding: 28px 32px 28px 16px;
+        margin-bottom: 36px;
+        width: 100%;
+        max-width: 900px;
+        box-sizing: border-box;
+        margin-left: 0 !important;
+        border-left: 4px solid var(--highlight-bg);
+    }
+
+    .user-profile .avatar {
+        background-color: var(--highlight-bg);
+        color: #fff;
+        font-size: 28px;
+        font-weight: bold;
+        border-radius: 50%;
+        width: 64px;
+        height: 64px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+    }
+
+    .user-profile .user-info h3 {
+        margin: 0 0 4px 0;
+        font-size: 26px;
+        font-weight: 600;
+        color: var(--highlight-bg);
+    }
+
+    .user-profile .user-info p {
+        margin: 0;
+        color: var(--secondary-text);
+        font-size: 16px;
+    }
+
+body.dark-mode .dashboard-card p,
+body.dark-mode .user-dashboard p,
+body.dark-mode .user-profile .user-info p {
+    color: #ffe6a7 !important;
+}
+
+/* Dark mode styles for user profile */
+body.dark-mode .user-profile {
+    background-color: #2d2d2d;
+    border: 1px solid #3d3d3d;
+    box-shadow: -4px 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-mode .user-profile .avatar {
+    background-color: #7f4f24;
+    color: #ffe6a7;
+}
+
+/* Dark mode styles for chart container */
+body.dark-mode .chart-container {
+    background-color: #2d2d2d;
+    border: 1px solid #3d3d3d;
+    box-shadow: -4px 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Ensure chart text is visible in dark mode */
+body.dark-mode .chartjs-render-monitor,
+body.dark-mode .chartjs-grid,
+body.dark-mode .chartjs-grid-line {
+    color: #ffe6a7 !important;
+}
+
+/* Dark mode hover effects */
+body.dark-mode .chart-container:hover {
+    box-shadow:0 8px 24px #7f4f24;
+    transform: translateY(-2px);
+}
+
+/* Ensure tooltips are visible in dark mode */
+body.dark-mode .chartjs-tooltip {
+    background-color: #363636 !important;
+    border: 1px solid #4d4d4d;
+    color: #ffe6a7 !important;
+}
+
+/* Grid lines in dark mode */
+body.dark-mode .chartjs-grid line {
+    color: #4d4d4d !important;
+}
+
+    .dashboard-row {
+        display: flex;
+        justify-content: flex-start;
+        gap: 28px;
+        width: 100%;
+        max-width: var(--content-max-width);
+        flex-wrap: wrap;
+        box-sizing: border-box;
+        overflow-x: hidden;
+        margin-bottom: 24px;
+    }
+
+    .dashboard-card {
+        background-color: #fff;
+        padding: 28px 24px 28px 16px;
+        border-radius: 16px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        flex: 1 1 300px;
+        min-width: 260px;
+        max-width: 400px;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        box-sizing: border-box;
+        border: 1px solid #ececec;
+        transition: box-shadow 0.2s, transform 0.2s;
+        align-items: flex-start;
+        overflow-x: hidden;
+        margin-left: 0 !important;
+    }
+
+    .dashboard-card h4, .dashboard-card h5 {
+        margin: 0 0 10px 0;
+        font-size: 20px;
+        font-weight: 600;
+        color: var(--highlight-bg);
+    }
+
+    .dashboard-card p, .dashboard-card ul {
+        font-size: 15px;
+        color: var(--primary-text);
+        margin-bottom: 8px;
+    }
+
+    .dashboard-card:hover {
+        box-shadow: 0 6px 24px rgba(127, 79, 36, 0.13);
+        transform: translateY(-2px) scale(1.01);
+        border-color: var(--highlight-bg);
+    }
+
+    .dashboard-card ul {
+        margin: 0 0 10px 20px;
+        padding: 0;
+        list-style: disc;
+    }
+
+    .dashboard-card textarea {
+        width: 100%;
+        border-radius: 10px;
+        border: 1px solid #ccc;
+        padding: 10px;
+        resize: vertical;
+        min-height: 80px;
+        margin-bottom: 12px;
+        font-family: inherit;
+        font-size: 15px;
+    }
+
+    .dashboard-card button {
+        background: var(--highlight-bg);
+        color: var(--highlight-text);
+        padding: 12px 22px;
+        border: none;
+        border-radius: 9px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: 500;
+        transition: background 0.2s;
+    }
+
+    .dashboard-card button:hover {
+        background: var(--secondary-bg);
+        color: var(--secondary-text);
+    }
+    /* Dark mode styles */
+body.dark-mode .dashboard-card {
+    background-color: #2d2d2d;
+    border-color: #3d3d3d;
+}
+
+    .chart-container {
+    width: 100%;
+    max-width: 1000px;
+    margin: 20px 0;
+    padding: 20px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+    transition: all 0.3s ease;
+}
+
+    @media (max-width: 1200px) {
+        .main-content, .dashboard-row {
+            max-width: 100vw;
+        }
+    }
+    @media (max-width: 992px) {
+        .dashboard-row {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 18px;
+        }
+        .dashboard-card {
+            max-width: 100%;
+            min-width: 0;
+        }
+        .main-content {
+            padding: 0 8px 0 8px;
+        }
+    }
+    @media (max-width: 768px) {
+        .user-profile {
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 16px 8px 16px 8px;
+            gap: 16px;
+            max-width: 100%;
+        }
+        .dashboard-row {
+            gap: 12px;
+        }
+        .dashboard-card {
+            padding: 16px 8px 16px 8px;
+        }
+        .main-content {
+            margin-top: 70px;
+        }
+        .content-wrapper {
+            margin-left: 0 !important;
+            padding: 0;
+        }
+    }
+
+    .delete-note-btn {
+    background: none;
+    border: none;
+    color: #dc3545;
+    cursor: pointer;
+    padding: 0;
+    margin-left: 10px;
+}
+
+.delete-note-btn:hover {
+    color: #c82333;
+}
+
+.delete-note-btn i {
+    font-size: 1.1em;
+}
+    /* Animation for cards */
+@keyframes cardFadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.dashboard-card {
+    animation: cardFadeIn 0.5s ease-out forwards;
+}
+
+/* Add staggered animation for multiple cards */
+.dashboard-row > *:nth-child(1) { animation-delay: 0.1s; }
+.dashboard-row > *:nth-child(2) { animation-delay: 0.2s; }
+.dashboard-row > *:nth-child(3) { animation-delay: 0.3s; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="content-wrapper">
+    <div class="main-content">
+
+        <!-- User Profile -->
+        <div class="user-profile">
+            <div class="avatar">{{ user_initial }}</div>
+            <div class="user-info">
+                <h3>{{ username }}</h3>
+                <p>{{ status }}</p>
+            </div>
+        </div>
+        <!-- Activity Chart -->
+        <div class="chart-container">
+            <canvas id="activityChart"></canvas>
+        </div>
+
+        <!-- Dashboard Row -->
+        <div class="dashboard-row">
+
+            <!-- Reading Progress -->
+            <div class="dashboard-card">
+                <h4>Your Reading Progress</h4>
+                {% if user_progress %}
+                <ul>
+                    {% for progress in user_progress %}
+                    <li>{{ progress.book.title }}: {{ progress.last_page }}/{{ progress.total_pages }} pages read</li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p>No reading data available.</p>
+                {% endif %}
+            </div>
+             <!-- Most Looked-Up Words -->
+<div class="dashboard-card">
+    <div class="card-header">
+        <h5>Most Looked-Up Words</h5>
+    </div>
+    <div class="card-body">
+        <div id="mostLookedUpWords" class="list-group">
+            <!-- Words will be populated here via JavaScript -->
+        </div>
+    </div>
+</div>
+
+            <!-- Daily Streaks and Active Days -->
+            <div class="dashboard-card">
+                <h4>Streak & Activity</h4>
+                <p><strong>Streak:</strong> {{ current_user.streak }} days</p>
+                <p><strong>Active Days:</strong> {{ current_user.active_days }}</p>
+            </div>
+
+            <!-- Notes -->
+            <div class="dashboard-card">
+                <h4>Your Notes</h4>
+                <div id="notes-list">
+                {% if notes %}
+                <ul>
+                    {% for note in notes %}
+                    <li>{{ note.content }} ({{ note.created_at.strftime('%Y-%m-%d') }})</li>
+                    <button class="delete-note-btn" data-note-id="{{ note.id }}">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p>No notes added yet.</p>
+                {% endif %}
+            </div>
+            <form id="notes-form" method="post">
+                <textarea name="content" placeholder="Write a note..."></textarea>
+                <button type="submit">Add Note</button>
+            </form>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<script>
+   document.addEventListener('DOMContentLoaded', function() {
+    fetch('/api/user/activity')
+        .then(response => response.json())
+        .then(data => {
+            const ctx = document.getElementById('activityChart').getContext('2d');
+            
+            // Format seconds to HH:MM:SS
+            const formatTime = (seconds) => {
+                const hours = Math.floor(seconds / 3600);
+                const minutes = Math.floor((seconds % 3600) / 60);
+                const secs = seconds % 60;
+                return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            };
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.days,
+                    datasets: [
+                        {
+                            label: 'Number of Visits',
+                            data: data.visitCounts,
+                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 1,
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: 'Time Spent (HH:MM:SS)',
+                            data: data.timeSpent,
+                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            borderWidth: 1,
+                            yAxisID: 'y1',
+                            type: 'line'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    scales: {
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            title: {
+                                display: true,
+                                text: 'Number of Visits'
+                            }
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            title: {
+                                display: true,
+                                text: 'Time Spent (HH:MM:SS)'
+                            },
+                            // Format the time for the y-axis
+                            ticks: {
+                                callback: function(value) {
+                                    return formatTime(value);
+                                }
+                            },
+                            grid: {
+                                drawOnChartArea: false
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                // Format tooltip to show time in HH:MM:SS
+                                afterLabel: function(context) {
+                                    if (context.datasetIndex === 1) { // Only for time spent dataset
+                                        return `Total: ${formatTime(context.raw)}`;
+                                    }
+                                    return null;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching activity data:', error);
+            const chartContainer = document.querySelector('.chart-container');
+            chartContainer.innerHTML = '<p style="text-align: center; color: #666;">No activity data available yet.</p>';
+        });
+});
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        fetchMostLookedUpWords();
+    });
+    
+function fetchMostLookedUpWords() {
+        fetch('/api/most-looked-up-words')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Received data:', data);
+                const container = document.getElementById('mostLookedUpWords');
+                container.innerHTML = '';
+                if (data.error) {
+                    container.innerHTML = `<div class="alert alert-danger">Error: ${data.error}</div>`;
+                    return;
+                }
+                if (!Array.isArray(data)) {
+                    container.innerHTML = '<div class="alert alert-warning">No words found</div>';
+                    return;
+                }
+                data.forEach(word => {
+                    const item = document.createElement('div');
+                    item.className = 'list-group-item d-flex justify-content-between align-items-center';
+                    item.innerHTML = `
+                        ${word.word}
+                        <span class="badge bg-primary rounded-pill">${word.count}</span>
+                    `;
+                    container.appendChild(item);
+                });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                const container = document.getElementById('mostLookedUpWords');
+                container.innerHTML = `<div class="alert alert-danger">Error loading words: ${error.message}</div>`;
+            });
+    }
+document.getElementById('notes-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const content = this.querySelector('textarea').value;
+    
+    fetch('/notes', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: 'content=' + encodeURIComponent(content)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Refresh notes list
+            fetch('/notes')
+                .then(response => response.json())
+                .then(notes => {
+                    const notesList = document.getElementById('notes-list');
+                    notesList.innerHTML = `
+                        <ul>
+                            ${notes.map(note => 
+                                `<li>${note.content} (${note.created_at}) 
+                                    <button class="delete-note-btn" data-note-id="${note.id}">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </li>`
+                            ).join('')}
+                        </ul>
+                    `;
+                    this.querySelector('textarea').value = ''; // Clear textarea
+                });
+        }
+    });
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('delete-note-btn') || 
+            e.target.parentElement.classList.contains('delete-note-btn')) {
+            const noteId = e.target.closest('.delete-note-btn').dataset.noteId;
+            if (confirm('Are you sure you want to delete this note?')) {
+                fetch(`/notes/${noteId}/delete`, {
+                    method: 'POST'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Refresh notes list
+                        fetch('/notes')
+                            .then(response => response.json())
+                            .then(notes => {
+                                const notesList = document.getElementById('notes-list');
+                                notesList.innerHTML = `
+                                    <ul>
+                                        ${notes.map(note => 
+                                            `<li>${note.content} (${note.created_at}) 
+                                                <button class="delete-note-btn" data-note-id="${note.id}">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </button>
+                                            </li>`
+                                        ).join('')}
+                                    </ul>
+                                `;
+                            });
+                    } else {
+                        alert('Error deleting note: ' + data.error);
+                    }
+                });
+            }
+        }
+    });
+});
+</script>    
+
+<script>
+    // Dashboard sidebar collapse logic
+    document.addEventListener('DOMContentLoaded', function() {
+        const sidebar = document.getElementById('sidebar');
+        const contentWrapper = document.querySelector('.content-wrapper');
+        // Sync margin-left on load
+        if (sidebar && contentWrapper) {
+            if (sidebar.classList.contains('sidebar-collapsed')) {
+                contentWrapper.style.marginLeft = '0';
+            } else {
+                contentWrapper.style.marginLeft = '220px';
+            }
+            // Listen for sidebar toggle
+            const toggleBtn = document.getElementById('sidebar-toggle-btn');
+            if (toggleBtn) {
+                toggleBtn.addEventListener('click', function() {
+                    setTimeout(function() {
+                        if (sidebar.classList.contains('sidebar-collapsed')) {
+                            contentWrapper.style.marginLeft = '0';
+                        } else {
+                            contentWrapper.style.marginLeft = '220px';
+                        }
+                    }, 10);
+                });
+            }
+        }
+    });
+</script>
+
+{% endblock %}

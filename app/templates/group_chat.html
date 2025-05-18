@@ -1,0 +1,308 @@
+{% extends "line.html" %}
+{% block title %}Group{% endblock %}
+
+    {% block extra_css %}
+<style>
+:root {
+    /* Default (Dark Mode) Variables */
+    --background-color: #121212;
+    --surface-color: #1e1e1e;
+    --container-color: #2a2a2a;
+    --text-color: #e0e0e0;
+    --meta-color: #b0b0b0;
+    --header-color: #bb86fc;
+    --accent-color: #03dac6;
+    --button-bg: #3700b3;
+    --button-hover-bg: #6200ee;
+    --system-message-bg: #2c2c2c;
+    --message-bg: #1f1f1f;
+    --input-bg: #2c2c2c;
+}
+
+/* Light mode overrides */
+body:not(.dark-mode) {
+    --background-color: #fafafa;
+    --surface-color: #ffffff;
+    --container-color: #f1f1f1;
+    --text-color: #1a1a1a;
+    --meta-color: #555;
+    --header-color: #6200ee;
+    --accent-color: #3700b3;
+    --button-bg: #6200ee;
+    --button-hover-bg: #3700b3;
+    --system-message-bg: #e0e0e0;
+    --message-bg: #f4f4f4;
+    --input-bg: #ffffff;
+}
+
+body {
+    background: var(--background-color);
+    color: var(--text-color);
+    font-family: 'Segoe UI', 'Roboto', sans-serif;
+    margin: 0;
+}
+
+header {
+    background: var(--surface-color);
+    color: var(--header-color);
+    text-align: center;
+    padding: 1.5rem 0 1rem;
+    font-size: 2rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    border-bottom: 1px solid #444;
+}
+
+.container {
+    display: flex;
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 32px;
+    gap: 24px;
+    background: var(--surface-color);
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.group-users {
+    width: 250px;
+    background: var(--container-color);
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.group-users h4 {
+    margin-top: 0;
+    color: var(--header-color);
+    font-size: 1.2rem;
+    margin-bottom: 12px;
+}
+
+.group-users ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.group-users li {
+    padding: 6px 0;
+    border-bottom: 1px solid #444;
+    color: var(--text-color);
+    font-size: 1rem;
+}
+
+.leave-btn {
+    background: var(--button-bg);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1rem;
+    border-radius: 8px;
+    margin-top: 12px;
+    cursor: pointer;
+    transition: background 0.3s;
+    width: 100%;
+}
+
+.leave-btn:hover {
+    background: var(--button-hover-bg);
+}
+
+.chat-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: var(--container-color);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.messages-list {
+    flex: 1;
+    overflow-y: auto;
+    margin-bottom: 16px;
+    padding-right: 8px;
+}
+
+.message {
+    background: var(--message-bg);
+    padding: 12px 16px;
+    border-radius: 10px;
+    margin-bottom: 14px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.message .meta {
+    font-size: 0.85rem;
+    color: var(--meta-color);
+    margin-bottom: 4px;
+}
+
+.message .actions {
+    margin-left: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.reply-btn,
+.delete-btn {
+    border: none;
+    border-radius: 4px;
+    padding: 6px 12px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.reply-btn {
+    background: transparent;
+    color: var(--header-color);
+}
+
+.reply-btn:hover {
+    background: #44444455;
+}
+
+.delete-btn {
+    background: transparent;
+    color: #ff6b6b;
+}
+
+.delete-btn:hover {
+    background: #ff6b6b;
+    color: white;
+}
+
+.system-message {
+    background: var(--system-message-bg);
+    padding: 10px 14px;
+    font-style: italic;
+    color: var(--header-color);
+    border-radius: 8px;
+    text-align: center;
+    margin-bottom: 12px;
+}
+
+.message-form {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.message-form input[type="text"] {
+    flex: 1;
+    padding: 12px;
+    font-size: 1rem;
+    border: 1px solid #444;
+    border-radius: 8px;
+    background: var(--input-bg);
+    color: var(--text-color);
+}
+
+.message-form button[type="submit"] {
+    padding: 12px 20px;
+    font-size: 1rem;
+    border: none;
+    background: var(--header-color);
+    color: white;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.message-form button[type="submit"]:hover {
+    background: var(--button-hover-bg);
+}
+</style>
+{% endblock %}
+
+
+{% block content %} 
+<h1>{{ group.name }}</h1>
+<main class="container">
+    <section class="group-users" aria-labelledby="group-members">
+        <h4 id="group-members">Group Members</h4>
+        <ul>
+        {% for user in users %}
+            <li>{{ user.username }}</li>
+        {% endfor %}
+        </ul>
+        <form method="POST" action="{{ url_for('main.leave_group', group_id=group.id) }}">
+            <button type="submit" class="leave-btn">Leave Group</button>
+        </form>
+    </section>
+    <section class="chat-container">
+        <div class="messages-list" role="log" aria-live="polite">
+            {% for message in messages %}
+                {% if message.is_system %}
+                    <div class="system-message">
+                        <em>{{ message.message }}</em>
+                    </div>
+                {% else %}
+                    <div class="message">
+                        <div>
+                            <div class="meta">
+                                {{ message.user.username if message.user else 'Unknown' }}
+                                <span style="font-size:0.85em; color:#bbb;">{{ message.timestamp.strftime('%Y-%m-%d %H:%M') }}</span>
+                            </div>
+                            <div>{{ message.message }}</div>
+                        </div>
+                        <div class="actions">
+                            <button class="reply-btn" data-msg-id="{{ message.id }}">Reply</button>
+                            {% if message.user_id == current_user.id %}
+                                <form method="POST" action="{{ url_for('main.delete_message', group_id=group.id, message_id=message.id) }}" style="display:inline;">
+                                    <button type="submit" class="delete-btn">Delete</button>
+                                </form>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+        <form class="message-form" method="POST" action="{{ url_for('main.group_chat', group_id=group.id) }}">
+            <input type="text" name="message" placeholder="Type your message here..." required aria-label="Message input">
+            <input type="hidden" name="reply_to" id="reply_to_input" value="">
+            <button type="submit">Send</button>
+        </form>
+    </section>
+</main>
+{% endblock %}
+{% block extra_js %}
+<script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/4.4.1/socket.io.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    var groupId = {{ group.id | tojson }};
+    var socket = io();
+
+    // Join the group room
+    socket.emit('join', {group_id: groupId });
+
+    // Listen for user_joined event
+    socket.on('user_joined', function(data) {
+        if (data.group_id === groupId) {
+            Swal.fire({
+                toast: true,
+                position: 'top-end',
+                icon: 'info',
+                title: data.username + ' joined the group!',
+                showConfirmButton: false,
+                timer: 3000
+            });
+        }
+    });
+
+    document.querySelectorAll('.reply-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            var msgId = btn.getAttribute('data-msg-id');
+            document.getElementById('reply_to_input').value = msgId;
+        });
+    });
+</script>
+{% endblock %}
+

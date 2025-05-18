@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+
+{% block title %}Add Book - ReadRift{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card bg-card shadow-sm">
+                <div class="card-header bg-gradient-primary text-white">
+                    <h2 class="mb-0"><i class="fas fa-plus-circle me-2"></i>Add New Book</h2>
+                </div>
+                <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data">
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="mb-3">
+                            {{ form.title.label(class="form-label text-muted") }}
+                            {{ form.title(class="form-control bg-input text-light") }}
+                            {% for error in form.title.errors %}
+                            <div class="text-danger small mt-1">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.new_genre.label(class="form-label text-muted") }}
+                            <div class="input-group">
+                                <span class="input-group-text bg-dark border-secondary text-light">
+                                    <i class="fas fa-plus-circle"></i>
+                                </span>
+                                {{ form.new_genre(class="form-control bg-input text-light border-secondary", placeholder="e.g. Mystery, Science Fiction, Romance") }}
+                            </div>
+                            <small class="form-text text-muted">Add genres (comma-separated)</small>
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.author.label(class="form-label text-muted") }}
+                            <div class="input-group">
+                                <span class="input-group-text bg-dark border-secondary text-light">
+                                    <i class="fas fa-user"></i>
+                                </span>
+                                {{ form.author(class="form-control bg-input text-light border-secondary") }}
+                            </div>
+                            {% for error in form.author.errors %}
+                            <div class="text-danger small mt-1">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.description.label(class="form-label text-muted") }}
+                            {{ form.description(class="form-control bg-input text-light border-secondary", rows=4) }}
+                            {% for error in form.description.errors %}
+                            <div class="text-danger small mt-1">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="mb-4">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="border rounded p-3 h-100">
+                                        <div class="mb-3">
+                                            {{ form.book_file.label(class="form-label text-muted d-block") }}
+                                            <div class="input-group">
+                                                {{ form.book_file(class="form-control bg-input text-light border-secondary") }}
+                                            </div>
+                                            {% for error in form.book_file.errors %}
+                                            <div class="text-danger small mt-1">{{ error }}</div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="border rounded p-3 h-100">
+                                        <div class="mb-3">
+                                            {{ form.cover_image.label(class="form-label text-muted d-block") }}
+                                            <div class="input-group">
+                                                {{ form.cover_image(class="form-control bg-input text-light border-secondary") }}
+                                            </div>
+                                            {% for error in form.cover_image.errors %}
+                                            <div class="text-danger small mt-1">{{ error }}</div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4 form-check form-switch">
+                            {{ form.is_featured(class="form-check-input", role="switch") }}
+                            <label class="form-check-label text-muted" for="{{ form.is_featured.id }}">
+                                <i class="fas fa-star me-2 text-warning"></i>Feature this book
+                            </label>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-plus-circle me-2"></i>Add Book
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .form-control, .form-select {
+        background-color: var(--input-bg) !important;
+        color: var(--dark-text) !important;
+        border-color: var(--border-color) !important;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        background-color: var(--input-focus-bg) !important;
+        color: var(--dark-text) !important;
+        border-color: var(--primary-color) !important;
+        box-shadow: 0 0 0 0.25rem rgba(var(--primary-rgb), 0.25);
+    }
+    
+    .card {
+        border: 1px solid var(--border-color);
+        background-color: var(--card-bg);
+    }
+    
+    .form-label {
+        font-weight: 500;
+    }
+    
+    .input-group-text {
+        background-color: var(--input-bg);
+        border-color: var(--border-color);
+        color: var(--dark-text);
+    }
+</style>
+{% endblock %}

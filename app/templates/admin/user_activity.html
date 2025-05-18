@@ -1,0 +1,211 @@
+<!-- templates/admin/user_activity.html -->
+{% extends "admin_dashboard.html" %}
+
+{% block content %}
+<div class="card mb-4">
+    <div class="card-body p-2">
+        <form method="GET" class="d-flex align-items-center gap-2" style="flex-wrap: nowrap; overflow-x: auto; padding-bottom: 10px;">
+            <!-- User ID -->
+            <div class="d-flex align-items-center gap-1" style="white-space: nowrap;">
+                <label for="user_id" class="form-label mb-0 small pe-1">ID:</label>
+                <input type="number" class="form-control form-control-sm" style="width: 60px;" 
+                       id="user_id" name="user_id" value="{{ current_filters.user_id if current_filters.user_id }}">
+            </div>
+            
+            <!-- Activity Type -->
+            <div class="d-flex align-items-center gap-1" style="white-space: nowrap;">
+                <label for="type" class="form-label mb-0 small pe-1">Type:</label>
+                <select class="form-select form-select-sm" style="width: 120px;" id="type" name="type">
+                    <option value="">All</option>
+                    {% for type in activity_types %}
+                    <option value="{{ type }}" {% if current_filters.type == type %}selected{% endif %}>
+                        {{ type.replace('_', ' ').title() }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <!-- Date From -->
+            <div class="d-flex align-items-center gap-1" style="white-space: nowrap;">
+                <label for="date_from" class="form-label mb-0 small pe-1">From:</label>
+                <input type="date" class="form-control form-control-sm" style="width: 130px;" 
+                       id="date_from" name="date_from" value="{{ current_filters.date_from if current_filters.date_from }}">
+            </div>
+            
+            <!-- Date To -->
+            <div class="d-flex align-items-center gap-1" style="white-space: nowrap;">
+                <label for="date_to" class="form-label mb-0 small pe-1">To:</label>
+                <input type="date" class="form-control form-control-sm" style="width: 130px;" 
+                       id="date_to" name="date_to" value="{{ current_filters.date_to if current_filters.date_to }}">
+            </div>
+            
+            <!-- Buttons -->
+            <div class="d-flex gap-2" style="white-space: nowrap;">
+                <button type="submit" class="btn btn-primary btn-sm">Filter</button>
+                <a href="{{ url_for('main.user_activity') }}" class="btn btn-outline-secondary btn-sm">Clear</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+    <!-- Activity Logs Table -->
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>User</th>
+                            <th>Activity</th>
+                            <th>Timestamp</th>
+                            <th>Details</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for activity in activities.items %}
+                        <tr>
+                            <td>{{ activity.id }}</td>
+                            <td>
+                                {% if activity.user %}
+                                    {{ activity.user.username }} ({{ activity.user.email }})
+                                {% else %}
+                                    [User Deleted]
+                                {% endif %}
+                            </td>
+                            <td>{{ activity.activity_type }}</td>
+                            <td>{{ activity.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                            <td>{{ activity.details|default('', true) }}</td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="5" class="text-center">No activity logs found</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+           <!-- Pagination -->
+{% if activities.pages > 1 %}
+<div class="pagination-container mt-4">
+    <style>
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
+        .pagination {
+            display: flex;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            border-radius: 0.375rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        .page-item {
+            margin: 0;
+            border-right: 1px solid #e2e8f0;
+        }
+        .page-item:last-child {
+            border-right: none;
+        }
+        .page-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 40px;
+            height: 40px;
+            padding: 0 15px;
+            color: #4a5568;
+            background-color: white;
+            border: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+        .page-link:hover {
+            background-color: #f7fafc;
+            color: #2d3748;
+        }
+        .page-item.active .page-link {
+            background-color: #4299e1;
+            color: white;
+            font-weight: 600;
+        }
+        .page-item.disabled .page-link {
+            color: #a0aec0;
+            background-color: #f7fafc;
+            cursor: not-allowed;
+        }
+        .page-item:not(.disabled):not(.active) .page-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+    
+    <nav aria-label="Activity pagination">
+        <ul class="pagination">
+            {% if activities.has_prev %}
+            <li class="page-item">
+                <a class="page-link" 
+                   href="{{ url_for('main.user_activity', 
+                                  page=activities.prev_num, 
+                                  user_id=request.args.get('user_id'),
+                                  type=request.args.get('type'),
+                                  date_from=request.args.get('date_from'),
+                                  date_to=request.args.get('date_to')) }}">
+                    &laquo; Prev
+                </a>
+            </li>
+            {% else %}
+            <li class="page-item disabled">
+                <span class="page-link">&laquo; Prev</span>
+            </li>
+            {% endif %}
+            
+            {% for page_num in activities.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=3) %}
+                {% if page_num %}
+                    <li class="page-item {% if page_num == activities.page %}active{% endif %}">
+                        <a class="page-link" 
+                           href="{{ url_for('main.user_activity', 
+                                          page=page_num,
+                                          user_id=request.args.get('user_id'),
+                                          type=request.args.get('type'),
+                                          date_from=request.args.get('date_from'),
+                                          date_to=request.args.get('date_to')) }}">
+                            {{ page_num }}
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link">...</span>
+                    </li>
+                {% endif %}
+            {% endfor %}
+            
+            {% if activities.has_next %}
+            <li class="page-item">
+                <a class="page-link" 
+                   href="{{ url_for('main.user_activity', 
+                                  page=activities.next_num,
+                                  user_id=request.args.get('user_id'),
+                                  type=request.args.get('type'),
+                                  date_from=request.args.get('date_from'),
+                                  date_to=request.args.get('date_to')) }}">
+                    Next &raquo;
+                </a>
+            </li>
+            {% else %}
+            <li class="page-item disabled">
+                <span class="page-link">Next &raquo;</span>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+</div>
+{% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Interests</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .modal {
+            background-color: white;
+            border-radius: 10px;
+            width: 400px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            text-align: center;
+        }
+        .modal h3 {
+            font-size: 20px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .modal p {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+        .modal .genre-list {
+            max-height: 200px;
+            overflow-y: auto;
+            text-align: left;
+            padding: 0 10px;
+            margin-bottom: 20px;
+        }
+        .modal .genre-item {
+            margin-bottom: 10px;
+        }
+        .modal .genre-item label {
+            font-size: 14px;
+            color: #333;
+        }
+        .modal button {
+            background-color: #6a4f30;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .modal button:hover {
+            background-color: #5a3f28;
+        }
+    </style>
+</head>
+<body>
+    <!-- Modal -->
+    <div class="modal">
+        <h3>Select Genres of Your Interest</h3>
+        <p>Select up to 5 genres</p>
+        <form action="/update_interests" method="POST">
+            <div class="genre-list">
+                {% for genre in genres %}
+                <div class="genre-item">
+                    <input type="checkbox" id="genre-{{ genre }}" name="genres" value="{{ genre }}" 
+                           {% if genre in selected_genres %}checked{% endif %}>
+                    <label for="genre-{{ genre }}">{{ genre }}</label>
+                </div>
+                {% endfor %}
+            </div>
+            <button type="submit">Update Interests</button>
+        </form>
+    </div>
+</body>
+</html>

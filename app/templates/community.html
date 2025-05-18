@@ -1,0 +1,428 @@
+{% extends "line.html" %}
+{% block title %}Community - ReadRift{% endblock %}
+
+{% block extra_css %}
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        :root {
+            --primary-bg: #f9f9f9;
+    --primary: #7f4f24;
+    --primary-text: #333d29;
+    --secondary-bg: #c2c5aa;
+    --secondary-text: #6a4f30;
+    --highlight-bg: #7f4f24;
+    --highlight-text: #ffe6a7;
+    --card-bg: #fff;
+    --card-shadow: 0 4px 16px rgba(127, 79, 36, 0.07);
+    --border-radius: 14px;
+    --transition: 0.2s cubic-bezier(.4,0,.2,1);
+    
+    /* Dark mode variables */
+    --dark-primary-bg: #1a1a1a; /* Dark background */
+    --dark-primary-text: #e0e0e0; /* Light text */
+    --dark-card-bg: #2d2d2d; /* Dark card background */
+    --dark-card-shadow: 0 2px 8px rgba(0, 0, 0, 0.3); /* Dark card shadow */
+    --dark-highlight-bg: #7f4f24; /* Dark highlight background */
+    --dark-secondary-text: #b0b0b0; /* Light secondary text */
+}
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(120deg, #f9f9f9 65%, #ffe6a7 100%);
+    color: var(--primary-text);
+    min-height: 100vh;
+        }
+
+        
+        /* Main Content */
+        .main-content {
+            margin-left: 100px;
+    margin-top: 50px;
+    padding: 0rem 2.5rem 0rem 2.5rem;
+    min-height: 100vh;
+    background: none;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+        }
+
+        .main-content header h1 {
+            font-size: 2.2rem;
+            color: var(--highlight-bg);
+            margin-bottom: 18px;
+            font-family: 'Georgia', serif;
+            letter-spacing: 1px;
+        }
+
+        /* Card/Section Styles */
+        .section-card {
+            background: var(--card-bg);
+    box-shadow: var(--card-shadow);
+    border-radius: var(--border-radius);
+    padding: 32px 28px;
+    margin-bottom: 32px;
+    transition: box-shadow 0.2s;
+    width: 100%;
+        }
+        .section-card:hover {
+            box-shadow: 0 8px 32px rgba(127,79,36,0.13);
+        }
+
+        /* Group Creation Form */
+        .create-group-form {
+            display: flex;
+            gap: 16px;
+            align-items: flex-end;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+        .create-group-form input[type="text"] {
+            flex: 1;
+            padding: 12px;
+            border: 1.5px solid var(--secondary-bg);
+            border-radius: 8px;
+            font-size: 1rem;
+            background: #f5f5f5;
+            transition: border 0.2s;
+        }
+        .create-group-form input[type="text"]:focus {
+            border: 1.5px solid var(--highlight-bg);
+            outline: none;
+        }
+        .create-group-form button {
+            padding: 12px 30px;
+            background: var(--highlight-bg);
+            color: var(--highlight-text);
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(127,79,36,0.08);
+            transition: background 0.2s;
+        }
+        .create-group-form button:hover {
+            background: #582f0e;
+        }
+
+        .section-card {
+    background: var(--card-bg);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+        /* Group List */
+        .group-list {
+            display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 24px;
+    width: 100%;
+        }
+        .group-card {
+            background: #fffef8;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    box-shadow: -4px 4px 8px rgba(127, 79, 36, 0.15);
+    padding: 20px 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition:  all 0.3s ease;
+    box-sizing: border-box;
+    min-width: 0;
+    max-width: 100%;
+        }
+        /* Dark mode hover effect */
+body.dark-mode .group-card {
+    background: #2d2d2d;
+    border-color: #3d3d3d;
+    box-shadow: -4px 4px 8px #7f4f24(0, 0, 0, 0.3);
+}
+
+body.dark-mode .group-card:hover {
+    background: #363636;
+    box-shadow: -8px 8px 24px #7f4f24;
+    transform: translateY(-4px) scale(1.02);
+}
+        .group-card:hover {
+            transform: translateY(-4px) scale(1.02);
+    box-shadow: -8px 8px 20px rgba(127, 79, 36, 0.25);
+        }
+        .group-card h3 {
+            margin: 0 0 8px 0;
+            color: var(--highlight-bg);
+            font-size: 1.2rem;
+            font-family: 'Georgia', serif;
+        }
+        .group-card p {
+            color: var(--secondary-text);
+            margin-bottom: 12px;
+            font-size: 0.97rem;
+        }
+        .group-card .join-btn, .delete-btn, .leave-btn {
+            margin-top: auto;
+            align-self: flex-end;
+            background: var(--secondary-bg);
+            color: var(--primary-text);
+            border: none;
+            border-radius: 6px;
+            padding: 8px 20px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background var(--transition), box-shadow var(--transition);
+        }
+        .group-card .join-btn:hover, .leave-btn:hover {
+            background: var(--highlight-bg);
+            color: var(--highlight-text);
+        }
+        .delete-btn {
+            background: #e53935;
+        }
+        .delete-btn:hover {
+            background: #c62828;
+        }
+        .create-group-container {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    margin-bottom: 24px;
+    width: 100%;
+}
+
+.create-group-container input[type="text"] {
+    padding: 0.6rem;
+    border-radius: 8px;
+    border: 1px solid #ccd;
+    font-size: 1rem;
+    width: 180px;
+    background: #f9f9fb;
+    transition: border var(--transition);
+}
+
+.create-group-container input[type="text"]:focus {
+    border: 1.5px solid var(--primary);
+    outline: none;
+}
+
+.create-group-container button {
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 0.6rem 1.4rem;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background var(--transition);
+    
+}
+
+.create-group-container button:hover {
+    background: var(--primary-dark);
+}
+
+.no-groups {
+    color: var(--secondary-text);
+    font-style: italic;
+    margin: 2rem 0;
+    text-align: center;
+}
+
+        .avatar-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 110%;
+    background: white;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    border-radius: 8px;
+    min-width: 140px;
+    z-index: 200;
+    padding: 8px 0;
+}
+
+.dropdown-menu a {
+    display: block;
+    padding: 10px 20px;
+    color: #4e4d49;
+    text-decoration: none;
+    font-size: 15px;
+    transition: background 0.2s;
+}
+
+.dropdown-menu a:hover {
+    background: #f7f3ec;
+}
+.notification-dropdown {
+    position: relative;
+    display: inline-block;
+}
+.notification-badge {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    background: red;
+    color: white;
+    border-radius: 50%;
+    font-size: 11px;
+    padding: 2px 6px;
+}
+.notification-menu {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 120%;
+    background: white;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    border-radius: 8px;
+    min-width: 200px;
+    z-index: 200;
+    padding: 8px 0;
+}
+.notification-item {
+    padding: 10px 20px;
+    font-size: 15px;
+    border-bottom: 1px solid #eee;
+}
+.notification-item:last-child {
+    border-bottom: none;
+}
+.group-actions {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
+    margin-top: auto;
+    flex-wrap: wrap;
+}
+
+.group-actions form {
+    display: inline;
+}
+
+.group-actions button {
+    min-width: 110px;
+}
+
+
+        /* Responsive */
+        
+        @media (prefers-color-scheme: dark) {
+    body {
+        background: var(--dark-primary-bg);
+        color: var(--dark-primary-text);
+    }
+    .main-content {
+        background: none;
+    }
+    .section-card {
+        background: var(--dark-card-bg);
+        box-shadow: var(--dark-card-shadow);
+    }
+    .group-card {
+        background: #202020;
+        border-color: #333333;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+    .group-card h3 {
+        color: var(--dark-highlight-bg);
+    }
+    .group-card p {
+        color: var(--dark-secondary-text);
+    }
+}
+        @media (max-width: 700px) {
+            .main-content {
+                margin-left: 0;
+                padding: 80px 6px 20px 6px;
+            }
+        }
+        @media (max-width: 900px) {
+    .group-list {
+        flex-direction: column;
+        gap: 1.2rem;
+    }
+    .group-card {
+        width: 100%;
+    }
+    .section-card {
+        background: var(--card-bg);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    padding: 2rem;
+    margin-bottom: 2rem;
+    }
+}
+    </style>
+    {% endblock %}
+
+    {% block content %}
+
+ 
+    <!-- Main Content -->
+    <div class="main-content">
+        <header>
+            <h1>Community Groups</h1>
+        </header>
+        <div class="section-card">
+            <h2 style="margin-top:0; color:var(--secondary-text); font-family:'Georgia',serif;">Create a New Group</h2>
+            <form method="POST" action="{{ url_for('main.create_group') }}">
+                <div class="create-group-container">
+                    <input type="text" name="group_name" placeholder="Enter group name" required>
+                    <input type="text" name="description" placeholder="Enter description">
+                    <button type="submit">Create Group</button>
+                </div>
+            </form>
+        </div>
+        <div class="section-card">
+            <h2 style="margin-top:0; color:var(--secondary-text); font-family:'Georgia',serif;">All Groups</h2>
+        
+    <div class="group-list">
+        {% for group in groups %}
+        <div class="group-card">
+            <h3>{{ group.name }}</h3>
+            <p>{{ group.description }}</p>
+            {% set user_in_group = false %}
+            {% for gm in user_groups %}
+            {% if gm.group_id == group.id and gm.user_id == current_user.id %}
+                {% set user_in_group = true %}
+            {% endif %}
+            {% endfor %}
+            <div class="group-actions">
+                {% if user_in_group %}
+                <form method="POST" action="{{ url_for('main.leave_group', group_id=group.id) }}" style="display:inline;">
+                    <button type="submit" class="leave-btn">Leave Group</button>
+                </form>
+            {% else %}
+            <button class="join-btn" data-group-id="{{ group.id }}">Join</button>
+            {% endif %}
+            {% if group.creator_id == current_user.id %}
+                <form method="POST" action="{{ url_for('main.delete_group', group_id=group.id) }}" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this group?');">
+                    <button type="submit" class="delete-btn">Delete Group</button>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+    </div>
+    </div>
+    </div>
+
+    <script>
+        document.querySelectorAll('.join-btn').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                var groupId = btn.getAttribute('data-group-id');
+                window.location.href = "/group/" + groupId + "/chat";
+            });
+        });
+    </script>
+
+{% endblock %}

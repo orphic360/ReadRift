@@ -1,0 +1,619 @@
+{% extends "line.html" %}
+
+{% block title %}Rifter Chatbot{% endblock %}
+
+{% block extra_css %}
+    <style>
+        :root {
+            --primary-bg: #f9f9f9;
+            --primary-text: #333d29;
+            --secondary-bg: #c2c5aa;
+            --secondary-text: #6a4f30;
+            --highlight-bg: #7f4f24;
+            --highlight-text: #ffe6a7;
+            --accent-bg: #bb9457;
+            --accent-hover: #99582a;
+            --border-radius: 8px;
+            --content-max-width: 1100px;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+            color: var(--primary-text);
+            display: flex;
+        }
+
+
+        .main-content {
+            margin-left: 200px; /* slightly reduced from 220px */
+    padding: 24px 20px; /* uniform padding instead of excessive left */
+    width: calc(100% - 200px); /* match the new sidebar width */
+    margin-top: 50px;
+    background-color: var(--primary-bg);
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    min-height: 100vh;
+    margin-left: auto; /* Push content to the right */
+    margin-right: 50px; /* Add some right margin */
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--highlight-bg);
+        }
+
+        .tabs button {
+            flex: 1;
+            padding: 12px;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            font-size: 1.1em;
+            color: var(--secondary-text);
+            transition: all 0.3s;
+        }
+
+        .tabs button.active {
+            border-bottom: 3px solid var(--highlight-bg);
+            color: var(--highlight-bg);
+            font-weight: bold;
+        }
+
+        .tab-content {
+            display: none;
+            width: 100%;
+            max-width: var(--content-max-width);
+            margin: 0 auto;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .input-box {
+            width: 100%;
+            padding: 10px 14px;
+            margin-top: 15px;
+            border: 1px solid var(--highlight-bg);
+            border-radius: var(--border-radius);
+            box-sizing: border-box;
+            font-size: 1em;
+        }
+
+        .btn {
+            padding: 10px 18px;
+            background-color: var(--accent-hover);  /* Light mode background */
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            margin-top: 12px;
+            font-size: 1em;
+        }
+
+        body.dark-mode .btn {
+            background-color: var(--dark-accent-bg); /* Dark mode background */
+            color: var(--dark-highlight-text); /* Dark mode text color */
+        }
+
+        .btn:hover {
+            background-color: var(--accent-hover); /* Light mode hover */
+        }
+
+        body.dark-mode .btn:hover {
+            background-color: var(--dark-accent-hover); /* Dark mode hover */
+        }
+
+        /* Specific button styles */
+        .start-new-conversation-btn {
+            background-color: var(--highlight-bg); /* Light mode */
+        }
+
+        body.dark-mode .start-new-conversation-btn {
+            background-color: var(--highlight-bg); /* Dark mode */
+        }
+
+        .upload-pdf-btn {
+            background-color: var(--highlight-bg); /* Light mode */
+        }
+
+        body.dark-mode .upload-pdf-btn {
+            background-color:var(--highlight-bg); /* Dark mode */
+        }
+
+        #chat-box {
+            height: 300px;
+            overflow-y: auto;
+            background-color: var(--light-secondary-bg); /* Light mode background */
+            border: 1px solid var(--highlight-bg); /* Light mode border color */
+            padding: 12px;
+            border-radius: var(--border-radius);
+            color: var(--primary-text); /* Light mode text color */
+        }
+
+        body.dark-mode #chat-box {
+            background-color: var(--dark-secondary-bg); /* Dark mode background */
+            border: 1px solid var(--dark-highlight-bg); /* Dark mode border color */
+            color: var(--dark-primary-text); /* Dark mode text color */
+        }
+
+        #chat-box div {
+            margin-bottom: 10px;
+        }
+        .history-container {
+    max-height: 600px;
+    overflow-y: auto;
+    margin-top: 20px;
+}
+
+.conversation-item {
+    padding: 15px;
+    border-bottom: 1px solid #ddd;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.conversation-item:hover {
+    background-color: #f5f5f5;
+}
+
+.conversation-item.active {
+    background-color: #e3f2fd;
+}
+
+.ai-assistant {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.function-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.function-btn {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 4px;
+    background: #000000;
+    color: white;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.function-btn.active {
+    background: #dc3545;
+}
+
+.function-btn:hover {
+    opacity: 0.9;
+}
+
+.input-section {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+#user-question {
+    flex-grow: 1;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    resize: none;
+    min-height: 40px;
+}
+
+.chat-history {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 15px;
+    border-top: 1px solid #ddd;
+}
+
+.chat-message {
+    margin: 5px 0;
+    padding: 8px 12px;
+    border-radius: 4px;
+    max-width: 80%;
+}
+
+.user-message {
+    background: #e3f2fd;
+    margin-left: auto;
+}
+
+.ai-message {
+    background: #f5f5f5;
+    margin-right: auto;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+    <div class="main-content">
+        <div class="tabs">
+            <button class="tab-link active" onclick="openTab(event, 'history')">Conversation History</button>
+            <button class="tab-link" onclick="openTab(event, 'conversation')">Conversation</button>
+            <button class="tab-link" onclick="openTab(event, 'upload')">Upload Document</button>
+        </div>
+
+        <div id="history" class="tab-content active">
+            <button class="btn start-new-conversation-btn" onclick="startNewConversation()">Start New Conversation</button>
+            <div id="history-list" class="history-container">
+                <!-- Conversations will be loaded here -->
+            </div>
+        </div>
+
+        <div id="conversation" class="tab-content">
+            <div id="chat-box"></div>
+            <input type="hidden" id="book-id" value="{{ current_book.id if current_book else '' }}">
+            <input type="text" id="chat-input" class="input-box" placeholder="Type your message here...">
+            <button class="btn" onclick="sendMessage()">Send</button>
+        </div>
+
+        <div id="upload" class="tab-content">
+            <form action="{{ url_for('main.upload_document') }}" method="POST" enctype="multipart/form-data">
+                <input type="file" name="pdf_file" accept="application/pdf" class="input-box" required>
+                <button class="btn upload-pdf-btn" type="submit">Upload PDF</button>
+            </form>
+        
+            <!-- Display uploaded files -->
+            <div class="uploaded-files" style="margin-top: 20px;">
+                <h3>Your Uploaded Files</h3>
+                {% if uploaded_files %}
+                    <ul style="list-style: none; padding: 0;">
+                        {% for file in uploaded_files %}
+                        <li style="display: flex; justify-content: space-between; align-items: center; 
+                                  padding: 10px; border-bottom: 1px solid #e0e0e0;">
+                            <span>{{ file.filename }}</span>
+                            <div>
+                                <button onclick="viewPdf('{{ file.filename }}')" 
+                                class="btn" 
+                                style="background-color: #6a4f30; color: white; padding: 5px 10px; margin-right: 10px; cursor: pointer;">
+                                View
+                                </button>
+                                <form action="{{ url_for('main.delete_file', file_id=file.id) }}" 
+                                      method="POST" 
+                                      style="display: inline;">
+                                    <button type="submit" 
+                                            class="btn" 
+                                            style="background-color: #dc3545; color: white; padding: 5px 10px; border: none; cursor: pointer;"
+                                            onclick="return confirm('Are you sure you want to delete this file?')">
+                                        Delete
+                                    </button>
+                                </form>
+                            </div>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>No files uploaded yet.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- PDF Viewer Modal -->
+<!-- PDF Viewer Modal -->
+<div id="pdfViewerModal" class="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; padding: 20px; box-sizing: border-box;">
+    <div class="modal-content" style="display: flex; height: 100%; max-width: 1600px; margin: 0 auto; background: white; border-radius: 8px; overflow: hidden;">
+        <!-- AI Assistant -->
+        <div id="ai-assistant" class="ai-assistant" style="width: 40%; background: #f8f9fa; border-right: 1px solid #ddd;">
+            <div class="function-controls">
+                <button class="function-btn active" data-function="general">General</button>
+                <button class="function-btn" data-function="definition">Definition</button>
+                <button class="function-btn" data-function="synonyms">Synonyms</button>
+                <button class="function-btn" data-function="explanation">Explanation</button>
+                <button class="function-btn" data-function="translation">Translation</button>
+                <button class="function-btn" data-function="cultural">Cultural/Historic</button>
+            </div>
+            <div class="input-section">
+                <textarea id="user-question" placeholder="Ask a question about the document..."></textarea>
+                <button id="ask-question">Ask Rifter</button>
+            </div>
+            <div id="chat-history" class="chat-history"></div>
+        </div>
+
+        <!-- PDF Viewer -->
+        <div class="pdf-viewer" style="width: 60%;">
+            <div style="background: #f8f9fa; padding: 10px; border-bottom: 1px solid #ddd; display: flex; justify-content: space-between; align-items: center;">
+                <span id="pdfTitle" style="font-weight: bold; margin-left: 10px;"></span>
+                <button onclick="closePdfViewer()" style="background: #dc3545; color: white; border: none; padding: 5px 15px; border-radius: 4px; cursor: pointer; margin-right: 10px;">Close</button>
+            </div>
+            <iframe id="pdfViewer" style="width: 100%; height: calc(100% - 40px); border: none; background: #525659;"></iframe>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+<script>
+function viewPdf(filename) {
+    const viewer = document.getElementById('pdfViewer');
+    const modal = document.getElementById('pdfViewerModal');
+    const title = document.getElementById('pdfTitle');
+    
+    // Set the title
+    title.textContent = filename;
+    
+    // Use native browser PDF viewer
+    viewer.src = "{{ url_for('main.view_pdf', filename='') }}" + encodeURIComponent(filename) + "#toolbar=1&navpanes=1";
+    
+    modal.style.display = 'block';
+    document.body.style.overflow = 'hidden';
+}
+
+
+</script>
+<script>
+    let currentFilePath = null;
+    let selectedFunction = 'general';
+    
+    $(document).ready(function() {
+        // Function to handle button clicks
+        $('.function-btn').click(function() {
+            selectedFunction = $(this).data('function');
+            $('.function-btn').removeClass('active');
+            $(this).addClass('active');
+        });
+    
+        // Function to handle question submission
+        $('#ask-question').click(function() {
+            const question = $('#user-question').val().trim();
+            
+            if (!question) {
+                alert('Please enter a question');
+                return;
+            }
+            
+            // Get the current file path from the PDF viewer
+            const pdfViewer = document.getElementById('pdfViewer');
+            const filePath = pdfViewer.src;
+            
+            if (!filePath || !filePath.trim()) {
+                alert('Please open a document first');
+                return;
+            }
+    
+            // Extract the filename from the URL
+            const filename = filePath.split('/').pop();
+            
+            // Construct the full file path
+            const fullPath = `${current_app.config.UPLOAD_FOLDER}/${filename}`;
+            
+            // Update currentFilePath
+            currentFilePath = fullPath;
+            
+            $(this).prop('disabled', true).text('Analyzing...');
+            
+            // Add user's question to chat history
+            const userMessage = $('<div>').addClass('chat-message user-message')
+                .text(`You: ${question} (${selectedFunction})`);
+            $('#chat-history').append(userMessage);
+            
+            $.ajax({
+                url: '/analyze_file',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    file_path: fullPath,
+                    question: question,
+                    function_type: selectedFunction
+                }),
+                success: function(response) {
+                    const aiMessage = $('<div>').addClass('chat-message ai-message')
+                        .text('AI: ' + response.answer);
+                    $('#chat-history').append(aiMessage);
+                    $('#chat-history').scrollTop($('#chat-history')[0].scrollHeight);
+                    $('#user-question').val('');
+                },
+                error: function(xhr) {
+                    const error = xhr.responseJSON?.error || 'An error occurred';
+                    console.error('Error:', error);
+                    alert('Error: ' + error);
+                },
+                complete: function() {
+                    $('#ask-question').prop('disabled', false).text('Ask Rifter');
+                }
+            });
+        });
+    
+        // Function to open PDF viewer
+        function openPdfViewer(filePath, title) {
+            // Extract the filename from the URL
+            const filename = filePath.split('/').pop();
+            
+            // Construct the full file path
+            currentFilePath = `${current_app.config.UPLOAD_FOLDER}/${filename}`;
+            
+            document.getElementById('pdfTitle').textContent = title;
+            document.getElementById('pdfViewer').src = `${filePath}?timestamp=${Date.now()}`;
+            document.getElementById('pdfViewerModal').style.display = 'block';
+            document.getElementById('ai-assistant').style.display = 'block';
+        }
+    
+        // Function to close PDF viewer
+        function closePdfViewer() {
+            document.getElementById('pdfViewerModal').style.display = 'none';
+            document.getElementById('pdfViewer').src = '';
+            document.getElementById('ai-assistant').style.display = 'none';
+            currentFilePath = null;
+        }
+    
+        // Close modal when clicking outside the content
+        window.onclick = function(event) {
+            const modal = document.getElementById('pdfViewerModal');
+            if (event.target === modal) {
+                closePdfViewer();
+            }
+        }
+    });
+    </script>
+    <script>
+        function openTab(evt, tabName) {
+            let tabs = document.getElementsByClassName("tab-content");
+            for (let i = 0; i < tabs.length; i++) {
+                tabs[i].classList.remove("active");
+            }
+
+            let buttons = document.getElementsByClassName("tab-link");
+            for (let i = 0; i < buttons.length; i++) {
+                buttons[i].classList.remove("active");
+            }
+
+            document.getElementById(tabName).classList.add("active");
+            evt.currentTarget.classList.add("active");
+        }
+
+        async function sendMessage() {
+        const inputBox = document.getElementById("chat-input");
+        const chatBox = document.getElementById("chat-box");
+        const message = inputBox.value;
+        const bookId = document.getElementById("book-id").value;
+
+        if (message.trim() === "") return;
+
+        const userMessage = document.createElement("div");
+        userMessage.textContent = "You: " + message;
+        chatBox.appendChild(userMessage);
+
+        inputBox.value = "";
+
+        try {
+            const response = await fetch("/chat", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ 
+                    message: message,
+                    book_id: bookId 
+                })
+            });
+
+            const data = await response.json();
+            const botMessage = document.createElement("div");
+
+            if (data.response) {
+                botMessage.textContent = "Bot: " + data.response;
+            } else if (data.error) {
+                botMessage.textContent = "Bot: " + data.error;
+            } else {
+                botMessage.textContent = "Bot: No response received.";
+            }
+            chatBox.appendChild(botMessage);
+        } catch (error) {
+            const errorMessage = document.createElement("div");
+            errorMessage.textContent = "Bot: Unable to respond. Try again later.";
+            chatBox.appendChild(errorMessage);
+        }
+
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    </script>
+    <script>
+        function startNewConversation() {
+            // Clear the chat box
+            const chatBox = document.getElementById("chat-box");
+            chatBox.innerHTML = "";
+            
+            // Switch to conversation tab
+            openTab(event, 'conversation');
+            
+            // Add a welcome message
+            const welcomeMessage = document.createElement("div");
+            welcomeMessage.textContent = "Bot: Hello! How can I assist you with your reading today?";
+            chatBox.appendChild(welcomeMessage);
+            
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+    </script>
+    <script>
+       async function loadHistory() {
+    try {
+        const response = await fetch('/get_history');
+        const conversations = await response.json();
+        const historyList = document.getElementById('history-list');
+        historyList.innerHTML = '';
+        
+        conversations.forEach(conv => {
+            const div = document.createElement('div');
+            div.className = 'conversation-item';
+            div.innerHTML = `
+                <div class="conversation-header">
+                    <h4>Conversation (${conv.message_count} messages)</h4>
+                    <small>Started: ${new Date(conv.start_time).toLocaleString()}</small>
+                </div>
+            `;
+            div.onclick = () => viewConversation(conv.id);
+            historyList.appendChild(div);
+        });
+    } catch (error) {
+        console.error('Error loading history:', error);
+    }
+}
+
+function startNewConversation() {
+    // Clear the session's conversation ID
+    fetch('/new_conversation', { method: 'POST' })
+        .then(() => {
+            // Clear the chat box
+            document.getElementById('chat-box').innerHTML = '';
+            // Load fresh history
+            loadHistory();
+        });
+} 
+    async function viewConversation(chatId) {
+    try {
+        const response = await fetch(`/view_conversation/${chatId}`);
+        const messages = await response.json();
+        
+        // Clear current chat
+        const chatBox = document.getElementById('chat-box');
+        chatBox.innerHTML = '';
+        
+        // Display messages
+        messages.forEach(msg => {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${msg.is_user ? 'user' : 'assistant'}`;
+            messageDiv.innerHTML = `
+                <div class="message-content">
+                    ${msg.content}
+                </div>
+                <small class="timestamp">${new Date(msg.timestamp).toLocaleString()}</small>
+            `;
+            chatBox.appendChild(messageDiv);
+        });
+        
+        // Scroll to bottom
+        chatBox.scrollTop = chatBox.scrollHeight;
+        
+        // Set conversation ID in session
+        fetch('/set_conversation', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ conversation_id: chatId })
+        });
+        
+    } catch (error) {
+        console.error('Error viewing conversation:', error);
+    }
+}
+        </script>
+
+{% endblock %}

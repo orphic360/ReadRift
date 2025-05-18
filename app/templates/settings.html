@@ -1,0 +1,370 @@
+{% extends "line.html" %}
+
+{% block title %}Settings{% endblock %}
+
+{% block extra_css %}
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+    --primary-bg: #a03535;
+    --primary-text: #333d29;
+    --secondary-bg: #c2c5aa;
+    --secondary-text: #6a4f30;
+    --highlight-bg: #7f4f24;
+    --highlight-text: #ffe6a7;
+    --accent-bg: #bb9457;
+    --accent-hover: #99582a;
+    --border-radius: 8px;
+    --content-max-width: 1100px;
+}
+
+/* Card Styling */
+.settings-card {
+    background-color: white;
+    border-radius: var(--border-radius);
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+    padding: 2.5rem;
+    transition: all 0.3s ease;
+    border: 1px solid #e0e0e0;
+    width: 600px;
+}
+
+.settings-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(127, 79, 36, 0.3);
+}
+.settings-section {
+    margin-bottom: 2.5rem;
+}
+.settings-section:not(:last-child) {
+    border-bottom: 1px solid #eee;
+    padding-bottom: 2rem;
+}
+/* Form Elements */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-control {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    transition: border-color 0.3s;
+}
+
+.form-control:focus {
+    border-color: var(--accent-bg);
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(187, 148, 87, 0.2);
+}
+
+/* Buttons */
+.btn {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background-color:  #99582a;
+    color: rgb(255, 249, 249);
+}
+
+.btn-primary:hover {
+    background-color: #6a4f30;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .settings-card {
+        margin: 1rem;
+        padding: 1.5rem;
+    }
+}
+
+/* Center the card in the viewport */
+.settings-wrapper {
+    display: flex;
+    min-height: calc(100vh - 60px);
+    background-color: var(--primary-bg);
+    margin-top: -40px;  /* Move the card up */
+    padding: 2rem;
+}
+.settings-scrollable {
+    max-width: 800px;
+    width: 100%;
+    margin: 0 auto; /* Center the content */
+}
+/* Header Styling */
+.settings-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.settings-header h1 {
+    font-size: 1.8rem;
+    color: var(--primary-text);
+    margin-bottom: 0.5rem;
+}
+.settings-header h2 {
+    font-size: 1.5rem;
+    color: var(--primary-text);
+    margin-bottom: 0.5rem;
+}
+
+.settings-header p {
+    color: var(--secondary-text);
+    font-size: 1rem;
+}
+body.dark-mode .settings-card {
+    background-color: #2d2d2d;
+    border-color: #3d3d3d;
+}
+
+body.dark-mode .settings-section:not(:last-child) {
+    border-bottom-color: #3d3d3d;
+}
+
+@media (max-width: 768px) {
+    .settings-wrapper {
+        flex-direction: column;
+        margin-left: 0;
+    }
+    
+    .settings-card {
+        margin: 1rem 0;
+        width: 100%;
+    }
+    
+    .settings-section {
+        margin-bottom: 2rem;
+    }
+    
+    .settings-section:not(:last-child) {
+        padding-bottom: 1.5rem;
+    }
+}
+
+/* Adjust the settings-card to take full width minus sidebar */
+.settings-card {
+    flex: 1;
+    max-width: 600px;
+    margin-left: 20px;
+}
+
+</style>
+{% endblock %}
+
+{% block content %}
+            <!-- Main Content -->
+            <div class="settings-wrapper">
+                <div class="settings-scrollable">
+                <div class="settings-card">
+                    <!-- Account Settings Section -->
+                    <div class="settings-section">
+                        <div class="settings-header">
+                            <h1>Account Settings</h1>
+                            <p>Update your account information</p>
+                        </div>
+                        
+                        <form method="POST" action="{{ url_for('main.settings') }}" class="settings-form">
+                            {{ account_form.hidden_tag() }}
+                            <div class="form-group">
+                                <label for="username">Username</label>
+                                {{ account_form.username(class="form-control", value=account_form.username.data) }}
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email</label>
+                                {{ account_form.email(class="form-control", value=account_form.email.data) }}
+                            </div>
+                            <div class="form-actions">
+                                {{ account_form.submit(class="btn btn-primary") }}
+                            </div>
+                        </form>
+                    </div>
+            
+                    <!-- Change Password Section -->
+                    <div class="settings-section password-section">
+                        <div class="settings-header">
+                            <h2>Change Password</h2>
+                            <p>Update your password securely</p>
+                        </div>
+                        
+                        <form method="POST" action="/settings" class="settings-form">
+                            {{ password_form.hidden_tag() }}
+                            <div class="form-group">
+                                <label for="current-password">Current Password</label>
+                                {{ password_form.current_password(class="form-control") }}
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="new-password">New Password</label>
+                                {{ password_form.new_password(class="form-control") }}
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="confirm-password">Confirm New Password</label>
+                                {{ password_form.confirm_password(class="form-control") }}
+                            </div>
+                            
+                            <div class="form-actions">
+                                {{ password_form.submit(class="btn btn-primary") }}
+                                
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                </div>
+            </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Tab switching
+    const tabLinks = document.querySelectorAll('.settings-menu-item');
+    const tabPanes = document.querySelectorAll('.tab-pane');
+    
+    tabLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const targetTab = this.getAttribute('data-tab');
+            
+            // Update active tab
+            tabLinks.forEach(tab => tab.classList.remove('active'));
+            this.classList.add('active');
+            
+            // Show target tab
+            tabPanes.forEach(pane => {
+                pane.classList.remove('active');
+                if (pane.id === targetTab) {
+                    pane.classList.add('active');
+                }
+            });
+            
+            // Update URL
+            history.pushState(null, null, `#${targetTab}`);
+        });
+    });
+    
+    // Form submission
+    //const forms = document.querySelectorAll('.settings-form');
+    //forms.forEach(form => {
+      //  form.addEventListener('submit', async function(e) {
+        //    e.preventDefault();
+          //  const formData = new FormData(form);
+            //const response = await fetch(form.action, {
+              //  method: 'POST',
+                //body: formData,
+            //});
+
+            //if (response.ok) {
+              //  const result = await response.json();
+                //showAlert('success', result.message);
+            //} else {
+              //  const error = await response.json();
+                //showAlert('error', error.message);
+            //}
+        //});
+    //});
+    
+    // Theme toggle functionality
+    const themeToggle = document.getElementById('theme-toggle');
+    const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    const currentTheme = localStorage.getItem('theme');
+    
+    // Set initial theme
+    if (currentTheme === 'dark' || (!currentTheme && prefersDarkScheme.matches)) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        updateThemeToggleIcon('dark');
+    }
+    
+    // Toggle theme
+    themeToggle.addEventListener('click', () => {
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        
+        document.documentElement.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+        updateThemeToggleIcon(newTheme);
+    });
+    
+    function updateThemeToggleIcon(theme) {
+        const icon = themeToggle.querySelector('i');
+        if (theme === 'dark') {
+            icon.classList.remove('fa-moon');
+            icon.classList.add('fa-sun');
+        } else {
+            icon.classList.remove('fa-sun');
+            icon.classList.add('fa-moon');
+        }
+    }
+    
+    // Show alert message
+    function showAlert(type, message) {
+        // Remove any existing alerts
+        const existingAlert = document.querySelector('.alert');
+        if (existingAlert) {
+            existingAlert.remove();
+        }
+        
+        // Create alert element
+        const alert = document.createElement('div');
+        alert.className = `alert alert-${type}`;
+        alert.innerHTML = `
+            <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+            <span>${message}</span>
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+        `;
+        
+        // Insert alert at the top of the settings content
+        const settingsContent = document.querySelector('.settings-main');
+        settingsContent.insertBefore(alert, settingsContent.firstChild);
+        
+        // Auto-remove alert after 5 seconds
+        setTimeout(() => {
+            alert.style.opacity = '0';
+            setTimeout(() => alert.remove(), 300);
+        }, 5000);
+        
+        // Close button functionality
+        const closeBtn = alert.querySelector('.close');
+        closeBtn.addEventListener('click', () => {
+            alert.style.opacity = '0';
+            setTimeout(() => alert.remove(), 300);
+        });
+    }
+    
+     // Validate password match
+     const newPassword = document.getElementById('new-password');
+    const confirmPassword = document.getElementById('confirm-password');
+    
+    if (newPassword && confirmPassword) {
+        [newPassword, confirmPassword].forEach(input => {
+            input.addEventListener('input', () => {
+                if (newPassword.value && confirmPassword.value) {
+                    if (newPassword.value !== confirmPassword.value) {
+                        confirmPassword.setCustomValidity("Passwords don't match");
+                    } else {
+                        confirmPassword.setCustomValidity('');
+                    }
+                }
+            });
+        });
+    }
+    
+    // Initialize active tab from URL hash
+    const hash = window.location.hash.substring(1);
+    if (hash) {
+        const tabLink = document.querySelector(`.settings-menu-item[data-tab="${hash}"]`);
+        if (tabLink) {
+            tabLink.click();
+        }
+    }
+});
+</script>
+{% endblock %}

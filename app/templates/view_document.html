@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Document</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: row; /* Change to row for side-by-side layout */
+            align-items: flex-start; /* Align items to the top */
+            justify-content: center;
+            height: 100vh;
+            background-color: #f9f9f9;
+        }
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 20px;
+        }
+
+        iframe {
+            width: 70%; /* Adjust width as needed */
+            height: 100%;
+            border: none;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .back-btn, .bookmark-btn, .view-bookmarks-btn {
+            margin: 10px;
+            padding: 10px 20px;
+            background-color: #6a4f30;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .back-btn:hover, .bookmark-btn:hover, .view-bookmarks-btn:hover {
+            background-color: #8b5a30;
+        }
+
+        #bookmarkList {
+            margin-top: 20px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="controls">
+        <a href="{{ url_for('main.upload_document') }}" class="back-btn">Back to Documents</a>
+        <input type="text" id="bookmarkName" placeholder="Bookmark name" />
+        <button class="bookmark-btn" onclick="saveBookmark()">Bookmark Page</button>
+        <button class="view-bookmarks-btn" onclick="fetchBookmarks()">View Bookmarks</button>
+        <div id="bookmarkList"></div>
+    </div>
+    <iframe src="{{ file_url }}" title="Document Viewer"></iframe>
+
+    <script>
+        let currentPage = 1; // Placeholder for the current page
+        const fileId = '{{ uploaded_file_id }}'; // Dynamically passed from the backend
+
+        // Save a bookmark
+        function saveBookmark() {
+            const bookmarkName = document.getElementById('bookmarkName').value.trim();
+            if (!bookmarkName) {
+                alert('Please enter a bookmark name.');
+                return;
+            }
+
+            fetch('/bookmark', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    file_id: fileId,
+                    page_number: currentPage,
+                    name: bookmarkName
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message);
+                fetchBookmarks(); // Refresh bookmarks
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        // Fetch bookmarks
+        function fetchBookmarks() {
+            fetch(`/get_bookmarks/${fileId}`)
+            .then(response => response.json())
+            .then(data => {
+                const bookmarkList = document.getElementById('bookmarkList');
+                bookmarkList.innerHTML = ''; // Clear previous bookmarks
+                data.bookmarks.forEach(bookmark => {
+                    const div = document.createElement('div');
+                    div.textContent = `Page ${bookmark.page_number}: ${bookmark.name}`;
+                    bookmarkList.appendChild(div);
+                });
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        // Track current page (example logic)
+        window.addEventListener('scroll', function () {
+            currentPage = Math.floor(document.getElementById('documentViewer').contentWindow.pageYOffset / 100) + 1;
+        });
+    </script>
+</body>
+
+</html>

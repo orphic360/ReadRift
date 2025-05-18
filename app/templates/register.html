@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Register - ReadRift</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --primary: #e2c58d;
+      --background: #f7f3ec;
+      --background-alt: #fef9f4;
+      --surface: #ffffff;
+      --text: #4e4d49;
+      --accent: #b7946a;
+      --accent-2: #725e45;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Raleway', sans-serif;
+      background: url('https://images.unsplash.com/photo-1531306728370-e2ebd9d7bb99?auto=format&fit=crop&w=1950&q=80') no-repeat center center fixed;
+      background-size: cover;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: var(--text);
+    }
+
+    .registration-container {
+      background: rgba(255, 255, 255, 0.65);
+      backdrop-filter: blur(12px);
+      border-radius: 20px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+      width: 380px;
+      padding: 40px 30px;
+      text-align: center;
+      transition: transform 0.3s ease;
+    }
+
+    .registration-container:hover {
+      transform: translateY(-4px);
+    }
+
+    h1 {
+      font-size: 28px;
+      color: var(--text);
+      margin-bottom: 5px;
+    }
+
+    p {
+      font-size: 14px;
+      color: var(--accent-2);
+      margin-bottom: 30px;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .form-group {
+      position: relative;
+    }
+
+    label {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      font-size: 13px;
+      color: var(--text);
+      font-weight: 600;
+      pointer-events: none;
+      transition: all 0.2s ease;
+      background-color: transparent;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px 12px;
+      background-color: var(--background-alt);
+      border: 1px solid var(--accent);
+      border-radius: 8px;
+      font-size: 14px;
+      color: var(--text);
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+    input::placeholder {
+      color: transparent;
+    }
+
+    input:focus {
+      border-color: var(--accent);
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(183, 148, 106, 0.2);
+      background-color: var(--surface);
+    }
+
+    input:focus + label,
+    input:not(:placeholder-shown) + label {
+      top: -8px;
+      left: 10px;
+      font-size: 11px;
+      background-color: rgba(255, 255, 255, 0.65);
+      padding: 0 5px;
+      color: var(--accent);
+    }
+
+    button {
+      background-color: var(--accent);
+      color: #fff;
+      padding: 12px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      font-weight: 600;
+    }
+
+    button:hover {
+      background-color: var(--accent-2);
+    }
+
+    .login-link {
+      margin-top: 20px;
+      font-size: 13px;
+      color: var(--accent);
+    }
+
+    .login-link a {
+      color: var(--text);
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .login-link a:hover {
+      text-decoration: underline;
+    }
+
+    .form-group i {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      color: #666;
+      font-size: 16px;
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="registration-container">
+    <h1>Create an Account</h1>
+    <p>Welcome! Create your ReadRift account and start exploring!</p>
+
+    <form action="{{ url_for('main.register') }}" method="POST">
+      {{ form.hidden_tag() }}
+
+      <div class="form-group">
+        <input type="text" id="username" name="username" placeholder=" " required autocomplete="username">
+        <label for="username">Username</label>
+      </div>
+
+      <div class="form-group">
+        <input type="email" id="email" name="email" placeholder=" " required autocomplete="email">
+        <label for="email">Email Address</label>
+      </div>
+
+      <div class="form-group">
+        <input type="password" id="password" name="password" placeholder=" " required autocomplete="new-password">
+        <label for="password">Password</label>
+      </div>
+
+      <div class="form-group">
+        <input type="password" id="confirm_password" name="confirm_password" placeholder=" " required autocomplete="new-password">
+        <label for="confirm_password">Confirm Password</label>
+      </div>
+
+      <button type="submit">Sign Up</button>
+    </form>
+
+    <div class="login-link">
+      Already have an account? <a href="{{ url_for('main.login') }}">Log In</a>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const form = document.querySelector('form');
+      const password = document.getElementById('password');
+      const confirm_password = document.getElementById('confirm_password');
+
+      // Add Font Awesome for eye icons
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css';
+      document.head.appendChild(link);
+
+      const createEyeIcon = () => {
+        const eye = document.createElement('i');
+        eye.className = 'fas fa-eye';
+        return eye;
+      };
+
+      const toggleVisibility = (input, icon) => {
+        icon.addEventListener('click', () => {
+          const isPassword = input.type === 'password';
+          input.type = isPassword ? 'text' : 'password';
+          icon.className = isPassword ? 'fas fa-eye-slash' : 'fas fa-eye';
+        });
+      };
+
+      const passwordEye = createEyeIcon();
+      const confirmEye = createEyeIcon();
+      password.parentElement.appendChild(passwordEye);
+      confirm_password.parentElement.appendChild(confirmEye);
+      toggleVisibility(password, passwordEye);
+      toggleVisibility(confirm_password, confirmEye);
+
+      form.addEventListener('submit', function(e) {
+        if (password.value !== confirm_password.value) {
+          e.preventDefault();
+          alert('Passwords do not match! Please make sure both passwords are the same.');
+        }
+      });
+    });
+  </script>
+
+</body>
+</html>
