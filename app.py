@@ -4,9 +4,9 @@ from app import create_app
 
 app = create_app(ProductionConfig)
 
-if __name__ == '__main__':
-    app.run(
-        host='0.0.0.0',  # Force it to listen on all public interfaces
-        port=5000,
-        debug=False
-    ) 
+# Always run the app with these settings
+app.run(
+    host='0.0.0.0',  # Force it to listen on all public interfaces
+    port=5000,
+    debug=False
+) 
