@@ -23,7 +23,6 @@ import nltk
 from .book_analyzer import BookAnalyzer
 from transformers import  pipeline
 import traceback
-from google.generativeai import configure, GenerativeModel
 from .utils.activity_loggers import log_activity
 from datetime import datetime, timedelta
 from sqlalchemy.orm import joinedload
