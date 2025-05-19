@@ -1,4 +1,4 @@
-from google.generativeai import configure, GenerativeModel
+from google import generativeai as genai
 import nltk
 from nltk.tokenize import sent_tokenize
 nltk.download('punkt')
@@ -9,8 +9,8 @@ class BookAnalyzer:
         self.book_text = self._load_book()
         
         # Configure Gemini API
-        configure(api_key="AIzaSyBOIMAxbRULe4sN3dOPfpXBWWuA_Jz5xLI")
-        self.model = GenerativeModel('gemini-2.0-flash')
+        genai.configure(api_key="AIzaSyBOIMAxbRULe4sN3dOPfpXBWWuA_Jz5xLI")
+        self.model = genai.GenerativeModel('gemini-pro')
         
         # Tokenize sentences
         self.sentences = self._tokenize_sentences(self.book_text)
