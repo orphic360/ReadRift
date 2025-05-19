@@ -35,11 +35,12 @@ nltk.download('stopwords')
 
 # Configure Gemini API
 genai.configure(api_key='AIzaSyBOIMAxbRULe4sN3dOPfpXBWWuA_Jz5xLI')
+
 # Create a model instance
-model = genai.GenerativeModel('gemini-pro')
+model = genai.GenerativeModel('gemini-1.0-pro')
 
 GEMINI_API_KEY = "AIzaSyBOIMAxbRULe4sN3dOPfpXBWWuA_Jz5xLI"  # Replace with your actual API key
-GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent"
+GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.0-pro:generateContent"
 main_bp = Blueprint('main', __name__)
 
 def get_ai_response(message):
@@ -59,7 +60,7 @@ def get_ai_response(message):
         
         # Make the API call
         response = requests.post(
-            'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent',
+            'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.0-pro:generateContent',
             headers={
                 'Authorization': f'Bearer {os.environ.get("GEMINI_API_KEY")}',
                 'Content-Type': 'application/json'
