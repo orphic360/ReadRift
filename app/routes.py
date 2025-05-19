@@ -41,7 +41,7 @@ model = genai.GenerativeModel('gemini-2.0-flash')
 
 
 GEMINI_API_KEY = "AIzaSyBOIMAxbRULe4sN3dOPfpXBWWuA_Jz5xLI"  # Replace with your actual API key
-GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent"
+GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent"
 main_bp = Blueprint('main', __name__)
 
 def get_ai_response(message):
@@ -61,9 +61,9 @@ def get_ai_response(message):
         
         # Make the API call
         response = requests.post(
-            'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent',
+            'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent',
             headers={
-                'Authorization': f'Bearer {os.environ.get("GEMINI_API_KEY")}',
+                'Authorization': f'Bearer {GEMINI_API_KEY}',
                 'Content-Type': 'application/json'
             },
             json=payload
