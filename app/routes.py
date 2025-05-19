@@ -21,9 +21,8 @@ import PyPDF2
 from PyPDF2 import PdfReader
 import nltk
 from .book_analyzer import BookAnalyzer
-from transformers import  pipeline
+from transformers import pipeline
 import traceback
-from google.generativeai import configure, GenerativeModel
 from .utils.activity_loggers import log_activity
 from datetime import datetime, timedelta
 from sqlalchemy.orm import joinedload
@@ -34,15 +33,13 @@ nltk.download('punkt')
 nltk.download('averaged_perceptron_tagger')
 nltk.download('stopwords')
 
-
-
+# Configure Gemini API
 genai.configure(api_key='AIzaSyBOIMAxbRULe4sN3dOPfpXBWWuA_Jz5xLI')
 # Create a model instance
-model = genai.GenerativeModel('gemini-2.0-flash')
-
+model = genai.GenerativeModel('gemini-pro')
 
 GEMINI_API_KEY = "AIzaSyBOIMAxbRULe4sN3dOPfpXBWWuA_Jz5xLI"  # Replace with your actual API key
-GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent"
+GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent"
 main_bp = Blueprint('main', __name__)
 
 def get_ai_response(message):
