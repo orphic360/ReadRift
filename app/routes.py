@@ -61,9 +61,9 @@ def get_ai_response(message):
         
         # Make the API call
         response = requests.post(
-            'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent',
+            'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent',
             headers={
-                'Authorization': f'Bearer {GEMINI_API_KEY}',
+                'Authorization': f'Bearer {os.environ.get("GEMINI_API_KEY")}',
                 'Content-Type': 'application/json'
             },
             json=payload
