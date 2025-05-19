@@ -7,7 +7,7 @@ app.config.from_object(ProductionConfig)
 
 if __name__ == '__main__':
     app.run(
-        host=app.config['HOST'],
-        port=app.config['PORT'],
-        debug=app.config['DEBUG']
+        host='0.0.0.0',  # Force it to listen on all public interfaces
+        port=5000,
+        debug=False
     ) 
