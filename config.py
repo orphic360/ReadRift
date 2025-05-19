@@ -13,5 +13,3 @@ class ProductionConfig(Config):
     DEBUG = False
     HOST = '0.0.0.0'
     PORT = 5000
-    SERVER_NAME = 'readrift.duckdns.org'
-    PREFERRED_URL_SCHEME = 'http'
