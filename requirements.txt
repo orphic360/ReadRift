@@ -14,7 +14,7 @@ dnspython==2.6.1
 email_validator==2.2.0
 Flask-Login==0.6.3
 Flask-SQLAlchemy==3.1.1
-Flask-WTF==1.2.2
+Flask-WTF==1.2.1
 flask_requests==0.0.14
 greenlet==3.1.1
 idna==3.10
