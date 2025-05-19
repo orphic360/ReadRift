@@ -1,9 +1,8 @@
 from flask import Flask
 from config import ProductionConfig
-import os
+from app import create_app
 
-app = Flask(__name__)
-app.config.from_object(ProductionConfig)
+app = create_app(ProductionConfig)
 
 if __name__ == '__main__':
     app.run(
